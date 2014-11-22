@@ -2,62 +2,6 @@
  ************************************************************************
  ECE 362 - Mini-Project C Source File - Fall 2014
  ***********************************************************************
-	 	   			 		  			 		  		
- Team ID: < ? >
-
- Project Name: < ? >
-
- Team Members:
-
-   - Team/Doc Leader: < ? >      Signature: ______________________
-   
-   - Software Leader: < ? >      Signature: ______________________
-
-   - Interface Leader: < ? >     Signature: ______________________
-
-   - Peripheral Leader: < ? >    Signature: ______________________
-
-
- Academic Honesty Statement:  In signing above, we hereby certify that we 
- are the individuals who created this HC(S)12 source file and that we have
- not copied the work of any other student (past or present) while completing 
- it. We understand that if we fail to honor this agreement, we will receive 
- a grade of ZERO and be subject to possible disciplinary action.
-
- ***********************************************************************
-
- The objective of this Mini-Project is to .... < ? >
-
-
- ***********************************************************************
-
- List of project-specific success criteria (functionality that will be
- demonstrated):
-
- 1.
-
- 2.
-
- 3.
-
- 4.
-
- 5.
-
- ***********************************************************************
-
-  Date code started: < ? >
-
-  Update history (add an entry every time a significant change is made):
-
-  Date: < ? >  Name: < ? >   Update: < ? >
-
-  Date: < ? >  Name: < ? >   Update: < ? >
-
-  Date: < ? >  Name: < ? >   Update: < ? >
-
-
- ***********************************************************************
  */
 
 #include <hidef.h>      /* common defines and macros */
