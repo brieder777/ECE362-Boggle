@@ -1,6 +1,6 @@
 ECE 362 Mini Project - Boggle
 =============================
-by Luke Neumann, Brian Reider, and Subhav Ramachandran
+by Luke Neumann, Brian Rieder, and Subhav Ramachandran
 
 ## Installation and Use
 Rather than putting CodeWarrior project directories in this repository, we should just put our sources here, and include them as necessary in CodeWarrior projects which reside somewhere else.
