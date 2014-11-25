@@ -37,13 +37,8 @@ extern "C" {
 #endif
 
 
-/* Initialize the LCD
-    - pull LCDCLK high (idle)
-    - pull R/W' low (write state)
-    - turn on LCD (LCDON instruction)
-    - enable two-line mode (TWOLINE instruction)
-    - clear LCD (LCDCLR instruction)
-    - wait for 2ms so that the LCD can wake up
+/**
+ * Initialize the LCD.
  */
 void lcd_init(void);
 
