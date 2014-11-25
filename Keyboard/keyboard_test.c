@@ -8,6 +8,8 @@
 #include "derivative.h"      /* derivative-specific definitions */
 #include <mc9s12c32.h>
 
+#include "../Course Includes/lcddriver.h"
+
 /* All functions after main should be initialized here */
 char inchar(void);
 void outchar(char x);
@@ -18,21 +20,8 @@ void outchar(char x);
 
 
 /* Special ASCII characters */
-#define CR 0x0D		// ASCII return�
-#define LF 0x0A		// ASCII new line�
-
-/* LCD COMMUNICATION BIT MASKS (note - different than previous labs) */
-#define RS 0x10		// RS pin mask (PTT[4])
-#define RW 0x20		// R/W pin mask (PTT[5])
-#define LCDCLK 0x40	// LCD EN/CLK pin mask (PTT[6])
-
-/* LCD INSTRUCTION CHARACTERS */
-#define LCDON 0x0F	// LCD initialization command
-#define LCDCLR 0x01	// LCD clear display command
-#define TWOLINE 0x38	// LCD 2-line enable command
-#define CURMOV 0xFE	// LCD cursor move instruction
-#define LINE1 = 0x80	// LCD line 1 cursor position
-#define LINE2 = 0xC0	// LCD line 2 cursor position
+//#define CR 0x0D		// ASCII return�
+//#define LF 0x0A		// ASCII new line�
 
 /*	 	   		
  ***********************************************************************
@@ -60,16 +49,16 @@ void initializations(void)
 	//  SCIBDH =  0x00; //set baud rate to 9600
 	//  SCIBDL =  0x9C; //24,000,000 / 16 / 156 = 9600 (approx)  
 	SCICR1 = 0x00; //$9C = 156
-//	SCICR2 = 0x0C; //initialize SCI for program-driven operation
+	SCICR2 = 0x0C; //initialize SCI for program-driven operation
 	DDRB = 0x10; //set PB4 for output mode
 	PORTB = 0x10; //assert DTR pin on COM port
 
 	SCICR1_PE = 1; // Parity enable
 	SCICR1_PT = 1; // Odd Parity
 
-	SCICR2_RE = 1;
+//	SCICR2_RE = 1;
 	
-	SCIBD = 110; // 24MHz / 16 / 110 = 12900
+	SCIBD = 117; // 24MHz / 16 / 117 = 12853 Hz
 
 	/* Initialize peripherals */
 
@@ -83,12 +72,22 @@ void initializations(void)
 	//	SPICR1_MSTR = 1; // Master Mode
 	//	SPICR1_CPHA = 0; // Send data on odd edges
 	//	SPICR1 = 0x50;
-	SPICR2 = 0; // Clear SPICR2 for good practice (single-direction mode)
+//	SPICR2 = 0; // Clear SPICR2 for good practice (single-direction mode)
 
 //	SPICR1_SPE = 1;
 //	SPICR1_MSTR = 0; // Slave Mode
 //	SPICR1_CPHA = 0; // Receive data on odd edges
 //	SPICR1_CPOL = 1;
+	
+	/*
+	  Initialize SPI for baud rate of 6 Mbs, MSB first
+	  (note that R/S, R/W', and LCD clk are on different PTT pins)
+	 */
+//	SPICR1_SPE = 1; // Enable SPI
+//	SPICR1_MSTR = 1; // Master Mode
+//	SPICR1_CPHA = 0; // Send data on odd edges
+	SPICR1 = 0x50;
+	SPICR2 = 0; // Clear SPICR2 for good practice (single-direction mode)
 
 
 	DDRT = 0xFF;
@@ -102,6 +101,7 @@ void initializations(void)
 Main
  ***********************************************************************
  */
+char lastc = 0;
 void main(void)
 {
 	char last = 1;
@@ -111,33 +111,55 @@ void main(void)
 	DisableInterrupts
 	initializations();
 	EnableInterrupts;
+	
+	lcd_init();
 
 	// GPIO test
 	//	 PTT = 0b01010101;
-
+	
 	for(;;)
 	{	
 		// SCI
-//		PTT = inchar();
-//
-//			 
-//		if(SCISR1_NF || SCISR1_PF || SCISR1_FE || SCISR1_OR) // If error
-//		{
-//			PTT = 0b01010101;
-//		}
+		char c = inchar();
+		if(c != 0 && c != 4 && c != lastc)
+		{
+			pnumlcd(c, 3);
+			print_c(' ');
+			lastc = c;
+		}
+		if(c == 0)
+		{
+			lastc = 0;
+			c=inchar();//read second byte of break code
+		}
+		
+
+			 
+		//chgline(LINE2);
+		//pnumlcd(inchar(),3);
+//		if(SCISR1_NF) // If error
+//			pnumlcd(1, 3);
+//		else if(SCISR1_PF)
+//			pnumlcd(2, 1);
+//		else if (SCISR1_FE)
+//			pnumlcd(3, 1);
+//		else if (SCISR1_OR)
+//			pnumlcd(4, 1);
+		
+		//chgline(LINE1);
 
 
 		// Manual
 //		while(x--);
-		
-		if(PTM_PTM0 && !last)
-		{
-			byte = byte << 1;
-			byte |= PTM_PTM1;
-		}
-		last = PTM_PTM0;
-
-		PTT = byte;
+//		
+//		if(PTM_PTM0 && !last)
+//		{
+//			byte = byte << 1;
+//			byte |= PTM_PTM1;
+//		}
+//		last = PTM_PTM0;
+//
+//		PTT = byte;
 
 
 		// SPI
