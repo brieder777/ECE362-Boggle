@@ -7,7 +7,12 @@
 
 #include "boggle.h"
 
-void generate_grid()
+void generate_grid(unsigned int seed)
+{
+	
+}
+
+void validate_word_grid(char* word)
 {
 	
 }
