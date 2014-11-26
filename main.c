@@ -208,7 +208,7 @@ void game_over_entry()
  */
 interrupt 7 void RTI_ISR(void)
 {
-	// clear RTI interrupt flagt 
+	// clear RTI interrupt flag
 	CRGFLG = CRGFLG | 0x80;
 
 
