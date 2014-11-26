@@ -3,6 +3,11 @@
  * Author: Subhav Ramachandran <subhav@purdue.edu>
  *
  * Created on November 22, 2014, 7:26 PM
+ * 
+ * ============================================================================
+ * 
+ * To make testing easier, this library should be compatible with both GCC and
+ * CodeWarrior compilers.
  */
 
 #ifndef BOGGLE_H
@@ -13,6 +18,7 @@ extern "C" {
 #endif
 
 // Global letter grid variable.
+//
 // If we want to be able to use the letters QU, we would need to change this
 // structure.
 char boggle_grid[4][4];
@@ -24,32 +30,23 @@ char boggle_grid[4][4];
  * 
  * Instead of returning the grid, this function sets the global variable
  * `boggle_grid`.
+ *
+ * @param seed      A random number used to generate the letter grid. This can
+ *                  be generated, for example, by counting RTI interrupts until
+ *                  the game begins.
  */
-void generate_grid(void);
+void generate_grid(unsigned int seed);
 
 /**
- * Validate an inputted word.
+ * Validate an inputted word against the letter grid.
  * 
- * @param word The word to validate.
- * @return 1 if valid, 0 otherwise
- */
-int validate_word(char* word);
-
-/**
- * Validate a word against the letter grid.
+ * Validating the word against a dictionary should be done externally from this
+ * library.
  * 
- * @param word The word to validate.
- * @return 1 if valid, 0 otherwise
+ * @param word      The word to validate.
+ * @return          1 if valid, 0 otherwise
  */
 int validate_word_grid(char* word);
-
-/**
- * Validate a word against the dictionary.
- * 
- * @param word The word to validate.
- * @return 1 if valid, 0 otherwise
- */
-int validate_word_dict(char* word);
 
 
 #ifdef	__cplusplus
