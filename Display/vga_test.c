@@ -12,6 +12,7 @@
 /* All functions after main should be initialized here */
 
 /* Variable declarations */
+char video_buffer[80*60 / 8];
 
 /* Special ASCII characters */
 #ifndef CR
@@ -30,11 +31,15 @@
 void initializations(void)
 {
 
-	/* Set the PLL speed (bus clock = 24 MHz) */
+	/* Set the PLL clock to 50 MHz (bus clock = 25 MHz) */
 	CLKSEL = CLKSEL & 0x80; //; disengage PLL from system
 	PLLCTL = PLLCTL | 0x40; //; turn on PLL
-	SYNR = 0x02; //; set PLL multiplier
-	REFDV = 0; //; set PLL divider
+	
+	// PLLCLK = 2 * OSCCLK * (SYNR + 1)/(REFDV + 1)
+	// 50 MHz = 2 *  8 MHz * 25 / 8
+	SYNR = 24;	// PLL multiplier
+	REFDV = 7;	// PLL divider
+			
 	while(!(CRGFLG & 0x08))
 	{
 	}
