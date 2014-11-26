@@ -38,15 +38,36 @@ char boggle_grid[4][4];
 void generate_grid(unsigned int seed);
 
 /**
+ * Validate a word against previous correct words.
+ * 
+ * @param word      A string containing the word to validate. (Terminated with
+ *                  a NULL character.)
+ * @return          1 if valid, 0 otherwise
+ */
+int validate_word_prev(char* word);
+
+/**
  * Validate an inputted word against the letter grid.
  * 
  * Validating the word against a dictionary should be done externally from this
  * library.
  * 
- * @param word      The word to validate.
+ * @param word      A string containing the word to validate. (Terminated with
+ *                  a NULL character.)
  * @return          1 if valid, 0 otherwise
  */
 int validate_word_grid(char* word);
+
+/**
+ * Calculate the number of points that a word is worth.
+ * 
+ * This does not validate the correctness of the word.
+ * 
+ * @param word      A string containing the word. (Terminated with a NULL
+ *                  character.)
+ * @return          The number of points the word is worth.
+ */
+char calculate_points(char* word);
 
 
 #ifdef	__cplusplus
