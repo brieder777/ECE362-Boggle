@@ -68,6 +68,18 @@ void initializations(void)
 
 	/* Initialize interrupts */
 
+	/* Initialize GPIO Pins */
+	
+	// Set HSYNC and VSYNC high.
+	PTM_PTM0 = 1;
+	PTM_PTM1 = 1;
+	
+	// Clear pixel bit.
+	PTT = 0;
+	
+	// Set PM0, PM1, and PT7 as outputs.
+	DDRM = 0x03;
+	DDRT = 0x80;
 
 }
 
@@ -103,6 +115,8 @@ interrupt 7 void RTI_ISR(void)
 
 }
 
+extern void video_draw(void);
+
 /*
  ***********************************************************************
   TIM interrupt service routine	  		
@@ -113,7 +127,7 @@ interrupt 15 void TIM_ISR(void)
 	// clear TIM CH 7 interrupt flag 
 	TFLG1 = TFLG1 | 0x80;
 
-
+	video_draw();
 }
 
 /*
