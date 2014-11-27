@@ -155,7 +155,9 @@ video_draw:
             nop                        ; burn time  (1 cycle)
             jsr nop100                 ; burn time  (100 cycles)
             jsr nop10                  ; burn time  (10 cycles)
-            movb #$80,MCFLG ; clear interrupt flag  (4 cycles)
+;            movb #$80,MCFLG ; clear interrupt flag  (4 cycles)
+            nop2
+            nop2
             bset PTM,%00000001          ; raise HS  (4 cycles)
             rts ; return from subroutine
 
@@ -238,7 +240,9 @@ video_draw:
             jsr nop10            ; burn time              (10 cycles)
             nop5                 ; burn time              (5 cycles)
             movb #40, vid_blanks ; 40 blank lines         (4 cycles)           
-            movb #$80,MCFLG      ; clear interrupt flag   (4 cycles)
+;            movb #$80,MCFLG      ; clear interrupt flag   (4 cycles)
+            nop2
+            nop2
             cli                  ; re-enable interrupts   (1 cycle)
             bset PTM,%00000001   ; raise HS               (4 cycles)
 
