@@ -2,6 +2,10 @@
 ; HCS12 VGA - rev 1
 ; http://markbowers.org/home/hcs12-vga
 
+; Ported for the MC9S12C32
+; by Subhav Ramachandran
+; <subhav@purdue.edu>
+
 
 ; export symbols
             XDEF set_video_pointer
@@ -84,9 +88,12 @@ MyCode:     SECTION
 
    ; writes a pixel color to PTT
    video_1:  macro
-              inx           ; increment X    (1 cycle)
+;              inx           ; increment X    (1 cycle)
+              nop
               nop2          ; waste time     (2 cycles)
-              movb X, PTT ; write to pins  (5 cycles)         
+;              movb X, PTT ; write to pins  (5 cycles)         
+              nop
+              com PTT       ; (4 cycles)
               endm
    
    video_9:  macro          ; 8x9 => 72 cycles
@@ -194,7 +201,8 @@ video_draw:
             video_10  ;                     (80 cycles)
             video_10  ;                     (80 cycles)
             video_9   ;                     (72 cycles)
-            inx       ; increment for next  (1 cycle)
+;            inx       ; increment for next  (1 cycle)
+            nop
             nop2      ; burn time           (2 cycle)
             nop2      ; burn time           (2 cycle)
             clr PTT ; blacken video       (3 cycles)
