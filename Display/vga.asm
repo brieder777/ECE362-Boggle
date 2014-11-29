@@ -96,6 +96,23 @@ MyCode:     SECTION
               com PTT       ; (4 cycles)
               endm
    
+   video_shift: macro
+              nop2          ; waste time (4 cycles)
+              nop2
+              lsl PTT       ; shift PTT left
+              endm
+
+   video_8:  macro
+              video_1
+              video_shift
+              video_shift
+              video_shift
+              video_shift
+              video_shift
+              video_shift
+              video_shift
+              endm
+
    video_9:  macro          ; 8x9 => 72 cycles
               video_1 
               video_1 
