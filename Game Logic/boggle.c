@@ -59,7 +59,7 @@ char validate_word_grid(char* word)
 		for(j = 0; j < BOGGLE_SIZE; j++)
 			if(*word == temp_grid[i][j])
 			{
-				// Recurse to find possible second, third, etc. letters
+				// Find possible second, third, etc. letters
 				if(is_adjacent(word + 1, temp_grid, i, j))
 					return 1;
 			}
