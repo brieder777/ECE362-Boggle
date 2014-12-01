@@ -46,28 +46,28 @@ void generate_grid(unsigned int seed)
  * 
  * @param word		Rest of word to find
  * @param grid		Temporary grid containing NULL chars. in visited spaces.
- * @param i			Row
- * @param j			Column
+ * @param x			Row
+ * @param y			Column
  * @return			1 if valid, 0 otherwise.
  */
 static char is_adjacent(char* word, Grid grid,
-		char i, char j)
+		char x, char y)
 {
-	char x, y;
+	char i, j;
 	
 	// If we've reached the end of the word, it hasn't been found.
 	if(*word == '\0')
 		return 0;
 	
 	// Mark current location as visited.
-	grid[i][j] = '\0';
+	grid[x][y] = '\0';
 	
 	// Look through all valid surrounding locations (potentially 8).
-	for(x = i - 1; x <= i + 1 && x >= 0 && x < BOGGLE_SIZE ; x++)
-		for(y = i - 1; y <= i + 1 && y >= 0 && y < BOGGLE_SIZE ; y++)
+	for(i = x - 1; i <= x + 1 && i >= 0 && i < BOGGLE_SIZE ; i++)
+		for(j = x - 1; j <= x + 1 && j >= 0 && j < BOGGLE_SIZE ; j++)
 		{
-			if(*word == grid[x][y])
-				if(is_adjacent(word + 1, grid, x, y))
+			if(*word == grid[i][j])
+				if(is_adjacent(word + 1, grid, i, j))
 					return 1;
 		}
 	
