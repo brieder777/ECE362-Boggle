@@ -50,7 +50,7 @@ void generate_grid(unsigned int seed)
  * @param j			Column
  * @return			1 if valid, 0 otherwise.
  */
-static char is_adjacent(char* word, char grid[BOGGLE_SIZE][BOGGLE_SIZE],
+static char is_adjacent(char* word, Grid grid,
 		char i, char j)
 {
 	char x, y;
@@ -60,7 +60,7 @@ static char is_adjacent(char* word, char grid[BOGGLE_SIZE][BOGGLE_SIZE],
 		return 0;
 	
 	// Mark current location as visited.
-	grid[i, j] = '\0';
+	grid[i][j] = '\0';
 	
 	// Look through all valid surrounding locations (potentially 8).
 	for(x = i - 1; x <= i + 1 && x >= 0 && x < BOGGLE_SIZE ; x++)
@@ -77,7 +77,7 @@ static char is_adjacent(char* word, char grid[BOGGLE_SIZE][BOGGLE_SIZE],
 char validate_word_grid(char* word)
 {
 	char i, j;
-	char temp_grid[BOGGLE_SIZE][BOGGLE_SIZE];
+	Grid temp_grid;
 	
 	// Copy the grid to temp_grid.
 	for(i = 0; i < BOGGLE_SIZE; i++)
