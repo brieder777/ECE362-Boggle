@@ -34,11 +34,13 @@ typedef struct boggle_player {
     char prev_words[BOGGLE_WORDLEN][BOGGLE_MAXWORDS]; // Array of previously found words.
 } Player;
 
+typedef char Grid[BOGGLE_SIZE][BOGGLE_SIZE];
+
 // Global letter grid variable.
 //
 // If we want to be able to use the letters QU, we would need to change this
 // structure.
-char boggle_grid[BOGGLE_SIZE][BOGGLE_SIZE];
+Grid boggle_grid;
 
 
 
