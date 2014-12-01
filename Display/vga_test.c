@@ -61,9 +61,9 @@ void initializations(void)
 	// Initialize TIM Ch 7 for periodic interrupts at 31.25 KHz
 	TSCR1_TEN = 1;	// Enable timer subsystem
 	TIOS_IOS7 = 1;	// Set Ch 7 to output compare mode
-	TSCR2_PR = 5;	// Set prescale to 2^5 = 32    25 MHz / 32 = 781.25 KHz
+	TSCR2_PR = 0;	// No prescale
 	TSCR2_TCRE = 1;	// Reset after OC7
-	TC7 = 25;		// Scale clock to 781.25 KHz / 25 = 31.25 KHz
+	TC7 = 799;		// Scale clock to 25 MHz / 800 = 31.25 KHz
 	TIE_C7I = 1;	// Enable interrupts
 
 	/* Initialize interrupts */
