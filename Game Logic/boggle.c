@@ -50,14 +50,13 @@ void generate_grid(unsigned int seed)
  * @param y			Column
  * @return			1 if valid, 0 otherwise.
  */
-static char is_adjacent(char* word, Grid grid,
-		char x, char y)
+static char is_adjacent(char* word, Grid grid, char x, char y)
 {
 	char i, j;
 	
-	// If we've reached the end of the word, it hasn't been found.
+	// If we've reached the end of the word, it has been found.
 	if(*word == '\0')
-		return 0;
+		return 1;
 	
 	// Mark current location as visited.
 	grid[x][y] = '\0';
