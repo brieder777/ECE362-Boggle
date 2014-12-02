@@ -40,6 +40,9 @@ void generate_grid(unsigned int seed)
 		}
 }
 
+// Variable to hold 
+static Grid visited = {{0,0,0,0}, {0,0,0,0}, {0,0,0,0}, {0,0,0,0}};
+
 /**
  * Helper function to `validate_word_grid`. Finds out whether a word can be
  * produced from a given starting location (i, j). 
@@ -50,7 +53,7 @@ void generate_grid(unsigned int seed)
  * @param y			Column
  * @return			1 if valid, 0 otherwise.
  */
-static char is_adjacent(char* word, Grid grid, char x, char y)
+static char is_adjacent(char* word, char x, char y)
 {
 	char i, j;
 	
@@ -59,37 +62,36 @@ static char is_adjacent(char* word, Grid grid, char x, char y)
 		return 1;
 	
 	// Mark current location as visited.
-	grid[x][y] = '\0';
+	visited[x][y] = 1;
 	
 	// Look through all valid surrounding locations (potentially 8).
 	for(i = x - 1; i <= x + 1 && i >= 0 && i < BOGGLE_SIZE ; i++)
 		for(j = x - 1; j <= x + 1 && j >= 0 && j < BOGGLE_SIZE ; j++)
-		{
-			if(*word == grid[i][j])
-				if(is_adjacent(word + 1, grid, i, j))
-					return 1;
-		}
+			if(*word == boggle_grid[i][j]
+					&& !visited[x][y]
+					&& is_adjacent(word + 1, i, j))
+			{
+				// Clear the visited flag and exit.
+				visited[x][y] = 0;
+				return 1;
+			}
 	
+	// Clear the visited flag and exit.
+	visited[x][y] = 0;
 	return 0;
 }
 
 char validate_word_grid(char* word)
 {
 	char i, j;
-	Grid temp_grid;
-	
-	// Copy the grid to temp_grid.
-	for(i = 0; i < BOGGLE_SIZE; i++)
-		for(j = 0; j < BOGGLE_SIZE; j++)
-			temp_grid[i][j] = boggle_grid[i][j];
 	
 	// Look for possible first letters.
 	for(i = 0; i < BOGGLE_SIZE; i++)
 		for(j = 0; j < BOGGLE_SIZE; j++)
-			if(*word == temp_grid[i][j])
+			if(*word == boggle_grid[i][j])
 			{
 				// Find possible second, third, etc. letters
-				if(is_adjacent(word + 1, temp_grid, i, j))
+				if(is_adjacent(word + 1, i, j))
 					return 1;
 			}
 	
