@@ -64,7 +64,7 @@
 #include "derivative.h"      /* derivative-specific definitions */
 #include <mc9s12c32.h>
 
-#include "Game Logic/boggle.h"
+#include "game_logic/boggle.h"
 
 /* All functions after main should be initialized here */
 void main_menu_entry(void);
