@@ -56,6 +56,7 @@ static Grid visited = {{0,0,0,0}, {0,0,0,0}, {0,0,0,0}, {0,0,0,0}};
 static char is_adjacent(char* word, char x, char y)
 {
 	char i, j;
+        char iter;
 	
 	// If we've reached the end of the word, it has been found.
 	if(*word == '\0')
@@ -65,16 +66,51 @@ static char is_adjacent(char* word, char x, char y)
 	visited[x][y] = 1;
 	
 	// Look through all valid surrounding locations (potentially 8).
-	for(i = x - 1; i <= x + 1 && i >= 0 && i < BOGGLE_SIZE ; i++)
-		for(j = x - 1; j <= x + 1 && j >= 0 && j < BOGGLE_SIZE ; j++)
-			if(*word == boggle_grid[i][j]
-					&& !visited[x][y]
-					&& is_adjacent(word + 1, i, j))
-			{
-				// Clear the visited flag and exit.
-				visited[x][y] = 0;
-				return 1;
-			}
+        for(iter = 0 ; iter < 8 ; iter++)
+        {
+            if(iter == 0)
+            {
+                i=x-1;
+                j=y-1;
+            }else if(iter == 1)
+            {
+                i=x;
+                j=y-1;
+            }else if(iter == 2)
+            {
+                i=x+1;
+                j=y-1;
+            }else if(iter == 3)
+            {
+                i=x+1;
+                j=y;
+            }else if(iter == 4)
+            {
+                i=x+1;
+                j=y+1;
+            }else if(iter == 5)
+            {
+                i=x;
+                j=y+1;
+            }else if(iter == 6)
+            {
+                i=x-1;
+                j=y+1;
+            }else//iter== 7
+            {
+                i=x-1;
+                j=y;
+            }        
+            if(i>=0 && i<BOGGLE_SIZE && j>=0 && j<BOGGLE_SIZE
+               && *word == boggle_grid[i][j] 
+               && !visited[x][y]
+               && is_adjacent(word + 1, i, j))
+            {
+                    // Clear the visited flag and exit.
+                    visited[x][y] = 0;
+                    return 1;
+            }
+        }
 	
 	// Clear the visited flag and exit.
 	visited[x][y] = 0;
