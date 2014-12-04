@@ -31,7 +31,7 @@ extern "C" {
  */
 typedef struct boggle_player {
     char word_count; // Number of words found.
-    char prev_words[BOGGLE_WORDLEN][BOGGLE_MAXWORDS]; // Array of previously found words.
+    char prev_words[BOGGLE_MAXWORDS][BOGGLE_WORDLEN]; // Array of previously found words.
 } Player;
 
 typedef char Grid[BOGGLE_SIZE][BOGGLE_SIZE];
