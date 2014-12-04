@@ -6,8 +6,8 @@
  */
 
 #include <string.h>
+
 #include "boggle.h"
-#include <string.h>
 
 /*
  * Implementation Details for `generate_grid`
