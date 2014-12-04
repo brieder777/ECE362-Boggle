@@ -197,8 +197,34 @@ char validate_word_grid(char* word)
 char calculate_points(char* word)
 {
 	char points = 0;
-	
-	
+	char itr = 0;
+
+	while(word[itr] != '\0')
+		++itr;
+
+	switch(itr) {
+		case 3:
+			points = 1;
+			break;
+		case 4:
+			points = 1;
+			break;
+		case 5:
+			points = 2;
+			break;
+		case 6:
+			points = 3;
+			break;
+		case 7:
+			points = 5;
+			break;
+		case 8:
+			points = 11;
+			break;
+		default:
+			points = 0;
+	}
+
 	return points;
 }
 
