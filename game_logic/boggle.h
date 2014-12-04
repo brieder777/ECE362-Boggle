@@ -30,7 +30,7 @@ extern "C" {
  * words in one contiguous array, and delimiting them by null characters.
  */
 typedef struct boggle_player {
-    char word_count = 0; // Number of words found.
+    char word_count; // Number of words found.
     char prev_words[BOGGLE_WORDLEN][BOGGLE_MAXWORDS]; // Array of previously found words.
 } Player;
 
