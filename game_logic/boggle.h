@@ -100,6 +100,13 @@ char validate_word_grid(char* word);
 char calculate_points(char* word);
 
 /**
+ * Initialize a Player object. It must be constructed externally.
+ * 
+ * @return          The initialized Player object.
+ */
+Player Player_init(void);
+
+/**
  * Add a word to a player's list of previous words.
  * 
  * @param word      A string containing the word to add. (Terminated with a
