@@ -109,14 +109,20 @@ static Grid visited = {{0,0,0,0}, {0,0,0,0}, {0,0,0,0}, {0,0,0,0}};
 static char is_adjacent(char* word, char x, char y)
 {
 	char i, j;
+        
         char iter;
 	
 	// If we've reached the end of the word, it has been found.
 	if(*word == '\0')
+	{
+		printf("good\n");
 		return 1;
+	}
 	
 	// Mark current location as visited.
 	visited[x][y] = 1;
+	printf("(%d,%d): %c\n",x,y,boggle_grid[x][y]);
+	printf("\tlooking for: %c\n",*word);
 	
 	// Look through all valid surrounding locations (potentially 8).
         for(iter = 0 ; iter < 8 ; iter++)
@@ -154,14 +160,18 @@ static char is_adjacent(char* word, char x, char y)
                 i=x-1;
                 j=y;
             }        
-            if(i>=0 && i<BOGGLE_SIZE && j>=0 && j<BOGGLE_SIZE
-               && *word == boggle_grid[i][j] 
-               && !visited[x][y]
-               && is_adjacent(word + 1, i, j))
+            if(i>=0 && i<BOGGLE_SIZE && j>=0 && j<BOGGLE_SIZE)
             {
-                    // Clear the visited flag and exit.
-                    visited[x][y] = 0;
-                    return 1;
+            	printf("\t%d: %c\n",iter,boggle_grid[i][j]);
+				if(*word == boggle_grid[i][j] && !visited[i][j])
+				{
+					if(is_adjacent(word + 1, i, j))
+					{
+							// Clear the visited flag and exit.
+							visited[x][y] = 0;
+							return 1;
+					}
+				}
             }
         }
 	
