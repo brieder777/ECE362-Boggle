@@ -5,6 +5,7 @@
  * Created on November 22, 2014, 7:26 PM
  */
 
+#include <string.h>
 #include "boggle.h"
 #include <string.h>
 
@@ -193,6 +194,17 @@ char validate_word_grid(char* word)
 			}
 	
 	return 0;
+}
+
+char validate_word_prev(char* word, Player* player)
+{
+	char itr;
+	for(itr = 0; itr < player->word_count; ++itr)
+		//If the word was previously used, return false
+			if(strcmp(word, &((player->prev_words)[itr][0])) == 0)
+				return 0;
+	//The word was not used, return true
+	return 1;
 }
 
 char calculate_points(char* word)
