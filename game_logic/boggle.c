@@ -31,12 +31,65 @@ void generate_grid(unsigned int seed)
 	char i, j;
 	char val;
 	
-//	srand(seed); // Seed the random number generator.
+	srand(seed); // Seed the random number generator.
 	
 	for(i = 0; i < BOGGLE_SIZE; i++)
 		for(j = 0; j < BOGGLE_SIZE; j++)
 		{
+			val = rand() % 96;
 			
+			if(val < 6)
+				boggle_grid[i][j] = 'A';
+			else if(val < 8)
+				boggle_grid[i][j] = 'B';
+			else if(val < 10)
+				boggle_grid[i][j] = 'C';
+			else if(val < 13)
+				boggle_grid[i][j] = 'D';
+			else if(val < 24)
+				boggle_grid[i][j] = 'E';
+			else if(val < 26)
+				boggle_grid[i][j] = 'F';
+			else if(val < 28)
+				boggle_grid[i][j] = 'G';
+			else if(val < 33)
+				boggle_grid[i][j] = 'H';
+			else if(val < 39)
+				boggle_grid[i][j] = 'I';
+			else if(val < 40)
+				boggle_grid[i][j] = 'J';
+			else if(val < 41)
+				boggle_grid[i][j] = 'K';
+			else if(val < 45)
+				boggle_grid[i][j] = 'L';
+			else if(val < 47)
+				boggle_grid[i][j] = 'M';
+			else if(val < 53)
+				boggle_grid[i][j] = 'N';
+			else if(val < 60)
+				boggle_grid[i][j] = 'O';
+			else if(val < 62)
+				boggle_grid[i][j] = 'P';
+			else if(val < 63)
+				boggle_grid[i][j] = 'Q';
+			else if(val < 68)
+				boggle_grid[i][j] = 'R';
+			else if(val < 74)
+				boggle_grid[i][j] = 'S';
+			else if(val < 83)
+				boggle_grid[i][j] = 'T';
+			else if(val < 86)
+				boggle_grid[i][j] = 'U';
+			else if(val < 88)
+				boggle_grid[i][j] = 'V';
+			else if(val < 91)
+				boggle_grid[i][j] = 'W';
+			else if(val < 92)
+				boggle_grid[i][j] = 'X';
+			else if(val < 95)
+				boggle_grid[i][j] = 'Y';
+			else
+				boggle_grid[i][j] = 'Z';
 		}
 }
 
