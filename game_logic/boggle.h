@@ -102,9 +102,9 @@ char calculate_points(char* word);
 /**
  * Initialize a Player object. It must be constructed externally.
  * 
- * @return          The initialized Player object.
+ * @param player    The player object to initialize.
  */
-Player Player_init(void);
+void Player_init(Player* player);
 
 /**
  * Add a word to a player's list of previous words.

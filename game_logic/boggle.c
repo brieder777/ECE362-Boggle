@@ -203,7 +203,7 @@ char calculate_points(char* word)
 }
 
 
-void Player_init(Player* p)
+void Player_init(Player* player)
 {
-	p->word_count = 0;
+	player->word_count = 0;
 }
