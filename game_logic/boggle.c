@@ -207,3 +207,18 @@ void Player_init(Player* player)
 {
 	player->word_count = 0;
 }
+
+void Player_add_word(Player* player, char* word)
+{
+	char* player_word = player->prev_words[player->word_count];
+	
+	while(word != '\0')
+	{
+		*player_word = *word;
+		
+		player_word++;
+		word++;
+	}
+	
+	(player->word_count)++;
+}

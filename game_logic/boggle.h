@@ -109,10 +109,11 @@ void Player_init(Player* player);
 /**
  * Add a word to a player's list of previous words.
  * 
+ * @param player    The player whose list to add the word to.
  * @param word      A string containing the word to add. (Terminated with a
  *                  NULL character.)
  */
-void Player_add_word(char* word);
+void Player_add_word(Player* player, char* word);
 
 
 #ifdef	__cplusplus
