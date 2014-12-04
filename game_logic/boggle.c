@@ -114,66 +114,63 @@ static char is_adjacent(char* word, char x, char y)
 	
 	// If we've reached the end of the word, it has been found.
 	if(*word == '\0')
-	{
-		printf("good\n");
 		return 1;
-	}
 	
 	// Mark current location as visited.
 	visited[x][y] = 1;
-	printf("(%d,%d): %c\n",x,y,boggle_grid[x][y]);
-	printf("\tlooking for: %c\n",*word);
 	
 	// Look through all valid surrounding locations (potentially 8).
-        for(iter = 0 ; iter < 8 ; iter++)
-        {
-            if(iter == 0)
-            {
-                i=x-1;
-                j=y-1;
-            }else if(iter == 1)
-            {
-                i=x;
-                j=y-1;
-            }else if(iter == 2)
-            {
-                i=x+1;
-                j=y-1;
-            }else if(iter == 3)
-            {
-                i=x+1;
-                j=y;
-            }else if(iter == 4)
-            {
-                i=x+1;
-                j=y+1;
-            }else if(iter == 5)
-            {
-                i=x;
-                j=y+1;
-            }else if(iter == 6)
-            {
-                i=x-1;
-                j=y+1;
-            }else//iter== 7
-            {
-                i=x-1;
-                j=y;
-            }        
-            if(i>=0 && i<BOGGLE_SIZE && j>=0 && j<BOGGLE_SIZE)
-            {
-            	printf("\t%d: %c\n",iter,boggle_grid[i][j]);
-				if(*word == boggle_grid[i][j] && !visited[i][j])
+	for(iter = 0; iter < 8; iter++)
+	{
+		switch(iter)
+		{
+			case 0:
+				i = x - 1;
+				j = y - 1;
+				break;
+			case 1:
+				i = x;
+				j = y - 1;
+				break;
+			case 2:
+				i = x + 1;
+				j = y - 1;
+				break;
+			case 3:
+				i = x + 1;
+				j = y;
+				break;
+			case 4:
+				i = x + 1;
+				j = y + 1;
+				break;
+			case 5:
+				i = x;
+				j = y + 1;
+				break;
+			case 6:
+				i = x - 1;
+				j = y + 1;
+				break;
+			case 7:
+				i = x - 1;
+				j = y;
+				break;
+		}
+		
+		if(i>=0 && i<BOGGLE_SIZE && j>=0 && j<BOGGLE_SIZE)
+		{
+			if(*word == boggle_grid[i][j] && !visited[i][j])
+			{
+				if(is_adjacent(word + 1, i, j))
 				{
-					if(is_adjacent(word + 1, i, j))
-					{
-							// Clear the visited flag and exit.
-							visited[x][y] = 0;
-							return 1;
-					}
+					// Clear the visited flag and exit.
+					visited[x][y] = 0;
+					return 1;
 				}
-            }
-        }
+			}
+		}
+	}
 	
 	// Clear the visited flag and exit.
 	visited[x][y] = 0;
@@ -183,7 +180,7 @@ static char is_adjacent(char* word, char x, char y)
 char validate_word_grid(char* word)
 {
 	char i, j;
-	
+
 	// Look for possible first letters.
 	for(i = 0; i < BOGGLE_SIZE; i++)
 		for(j = 0; j < BOGGLE_SIZE; j++)
