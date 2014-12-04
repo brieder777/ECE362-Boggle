@@ -6,6 +6,7 @@
  */
 
 #include "boggle.h"
+#include <string.h>
 
 /*
  * Implementation Details for `generate_grid`
@@ -236,15 +237,7 @@ void Player_init(Player* player)
 
 void Player_add_word(Player* player, char* word)
 {
-	char* player_word = player->prev_words[player->word_count];
-	
-	while(word != '\0')
-	{
-		*player_word = *word;
-		
-		player_word++;
-		word++;
-	}
+	strcpy(player->prev_words[player->word_count], word);
 	
 	(player->word_count)++;
 }
