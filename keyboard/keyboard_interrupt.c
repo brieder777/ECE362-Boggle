@@ -65,12 +65,11 @@
 #include <hidef.h>      /* common defines and macros */
 #include "derivative.h"      /* derivative-specific definitions */
 #include <mc9s12c32.h>
+#include "keyboard.h"
 
 /* All functions after main should be initialized here */
 char inchar(void);
 void outchar(char x);
-void outbin(char x);
-void outbin_int(int x);
 
 /* Variable declarations */
 unsigned char keyboard_bit = 0;
@@ -134,7 +133,7 @@ void  initializations(void) {
 /* Initialize interrupts */
 	 INTCR_IRQE = 0;
    INTCR_IRQEN = 1;
-	      
+	 
 }
 
 	 		  			 		  		
@@ -164,6 +163,68 @@ void main(void) {
 ***********************************************************************
 */
 
+unsigned char translate_keyboard_character(unsigned char buff_char)
+{
+  switch(buff_char) {
+    case KEYBOARD_A:
+      return 'A';
+    case KEYBOARD_B:
+      return 'B';
+    case KEYBOARD_C:
+      return 'C';
+    case KEYBOARD_D:
+      return 'D';
+    case KEYBOARD_E:
+      return 'E';
+    case KEYBOARD_F:
+      return 'F';
+    case KEYBOARD_G:
+      return 'G';
+    case KEYBOARD_H:
+      return 'H';
+    case KEYBOARD_I:
+      return 'I';
+    case KEYBOARD_J:
+      return 'J';
+    case KEYBOARD_K:
+      return 'K';
+    case KEYBOARD_L:
+      return 'L';
+    case KEYBOARD_M:
+      return 'M';
+    case KEYBOARD_N:
+      return 'N';
+    case KEYBOARD_O:
+      return 'O';
+    case KEYBOARD_P:
+      return 'P';
+    case KEYBOARD_Q:
+      return 'Q';
+    case KEYBOARD_R:
+      return 'R';
+    case KEYBOARD_S:
+      return 'S';
+    case KEYBOARD_T:
+      return 'T';
+    case KEYBOARD_U:
+      return 'U';
+    case KEYBOARD_V:
+      return 'V';
+    case KEYBOARD_W:
+      return 'W';
+    case KEYBOARD_X:
+      return 'X';
+    case KEYBOARD_Y:
+      return 'Y';
+    case KEYBOARD_Z:
+      return 'Z';
+    case KEYBOARD_ENTER:
+      return '\n';
+    default:
+      return '~';
+  }
+}
+
 void keyboard_char_to_buff(void)
 {
   unsigned char itr;
@@ -176,6 +237,9 @@ void keyboard_char_to_buff(void)
     keyboard_char_buff[keyboard_buff_itr] |= (keyboard_character & 0x01);
     keyboard_character = keyboard_character >> 1;
   }
+
+  keyboard_char_buff[keyboard_buff_itr] = 
+    translate_keyboard_character(keyboard_char_buff[keyboard_buff_itr]);
   
   //keyboard_char_buff[keyboard_buff_itr] |= (keyboard_character & 0xFF);
 }
@@ -190,10 +254,11 @@ interrupt 6 void IRQ_ISR(void)
   // The character has to be reset after every 11th bit
   if(keyboard_bit == 11) {
     keyboard_bit = 0;
-    //keyboard_char_to_buff();
-    outbin_int(keyboard_character);
+    keyboard_char_to_buff();
+    //outbin_int(keyboard_character);
     keyboard_character = 0;
-    //outbin(keyboard_char_buff[keyboard_buff_itr]);
+    outbin(keyboard_char_buff[keyboard_buff_itr]);
+    //outchar(keyboard_char_buff[keyboard_buff_itr]);
     ++keyboard_buff_itr;
   }
 
