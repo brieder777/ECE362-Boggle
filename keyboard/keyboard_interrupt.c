@@ -60,12 +60,18 @@
 ***********************************************************************
 */
 
-//@TODO: Print out characters based on reverse integers
-
 #include <hidef.h>      /* common defines and macros */
 #include "derivative.h"      /* derivative-specific definitions */
 #include <mc9s12c32.h>
 #include "keyboard.h"
+
+typedef union {
+    int word;
+    struct {
+      char high;
+      char low;
+    } bytes;
+  } Frame;
 
 /* All functions after main should be initialized here */
 char inchar(void);
@@ -76,6 +82,8 @@ unsigned char keyboard_bit = 0;
 int keyboard_character = 0;
 unsigned char keyboard_buff_itr = 0;
 unsigned char keyboard_char_buff[10];
+// unsigned char frame_read;
+Frame keyboard_frame;
    	   			 		  			 		       
 
 /* Special ASCII characters */
@@ -127,6 +135,7 @@ void  initializations(void) {
   // Initialize the Port M 0 and 1 as input and output respectively
   DDRM_DDRM0 = 0; // Data received from keyboard
   DDRM_DDRM1 = 1; // CLR signal sent to flip-flop
+  DDRT = 1;
 
 /* Initialize peripherals */
             
@@ -150,7 +159,7 @@ void main(void) {
  for(;;) {
   
 /* < start of your main loop > */ 
-  
+    
     
   
    } /* loop forever */
@@ -165,6 +174,7 @@ void main(void) {
 
 unsigned char translate_keyboard_character(unsigned char buff_char)
 {
+  // outbin(buff_char);
   switch(buff_char) {
     case KEYBOARD_A:
       return 'A';
@@ -221,7 +231,7 @@ unsigned char translate_keyboard_character(unsigned char buff_char)
     case KEYBOARD_ENTER:
       return '\n';
     default:
-      return '~';
+      return '!';
   }
 }
 
@@ -238,15 +248,19 @@ void keyboard_char_to_buff(void)
     keyboard_character = keyboard_character >> 1;
   }
 
-  keyboard_char_buff[keyboard_buff_itr] = 
-    translate_keyboard_character(keyboard_char_buff[keyboard_buff_itr]);
+
+  //keyboard_char_buff[keyboard_buff_itr] = 
+    //translate_keyboard_character(keyboard_char_buff[keyboard_buff_itr]);
   
-  //keyboard_char_buff[keyboard_buff_itr] |= (keyboard_character & 0xFF);
 }
+
+
 
 interrupt 6 void IRQ_ISR(void)
 {
-  // Send clear signal to flip-flop -- high, low, high
+
+
+  // // Send clear signal to flip-flop -- high, low, high
   PTM_PTM1 = 1;
   PTM_PTM1 = 0;
   PTM_PTM1 = 1;
@@ -257,8 +271,8 @@ interrupt 6 void IRQ_ISR(void)
     keyboard_char_to_buff();
     //outbin_int(keyboard_character);
     keyboard_character = 0;
-    outbin(keyboard_char_buff[keyboard_buff_itr]);
-    //outchar(keyboard_char_buff[keyboard_buff_itr]);
+    outchar(keyboard_char_buff[keyboard_buff_itr]);
+    //outbin_noout(keyboard_char_buff[keyboard_buff_itr]);
     ++keyboard_buff_itr;
   }
 
@@ -266,6 +280,8 @@ interrupt 6 void IRQ_ISR(void)
   keyboard_character = keyboard_character << 1;
   keyboard_character |= PTM_PTM0;
   ++keyboard_bit;
+
+ 
 }
 
 /*
@@ -337,6 +353,17 @@ void outbin_int(int x)
 {
   unsigned char itr;
   for(itr = 0; itr < 16; ++itr) {
+    outchar((x & 0x01) + '0');
+    x = x >> 1;
+  }
+  outchar('\r');
+  outchar('\n');
+}
+
+void outbin_noout(char x)
+{
+  unsigned char itr;
+  for(itr = 0; itr < 8; ++itr) {
     outchar((x & 0x01) + '0');
     x = x >> 1;
   }
