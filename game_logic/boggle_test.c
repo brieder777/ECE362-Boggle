@@ -10,6 +10,23 @@
 
 #include "boggle.h"
 
+void print_grid()
+{
+	int i;
+	int j;
+	
+	for(i = 0; i < BOGGLE_SIZE; i++)
+	{
+		for(j = 0; j < BOGGLE_SIZE; j++)
+		{
+			printf("%c", boggle_grid[i][j]);
+		}
+		printf("\n");
+	}
+
+
+}
+
 /*
  * 
  */
@@ -46,7 +63,29 @@ int main(int argc, char** argv)
 	{
 		printf("nope");
 	}
-
+	
+	printf("\n\n");
+	
+	Player p1;
+	Player p2;
+	
+	Player_init(&p1);
+	printf("%d\n", p1.word_count);
+	printf("%d\n", p2.word_count);
+	
+	Player_add_word(&p1, "test");
+	printf("%s\n", p1.prev_words[0]);
+	printf("%d\n", p1.word_count);
+	
+	int i;
+	for(i = 1; i < 10; i++)
+	{
+		printf("\n");
+		generate_grid(i);
+		print_grid();
+	}
+	
+	
 	return(EXIT_SUCCESS);
 }
 
