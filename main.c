@@ -64,7 +64,6 @@
 #include "derivative.h"      /* derivative-specific definitions */
 #include <mc9s12c32.h>
 
-#include <terminal.h>
 #include <stdio.h>
 #include "game_logic/boggle.h"
 #include "keyboard/keyboard.h"
@@ -162,7 +161,7 @@ void main(void)
 	for(;;)
 	{
 		// Clear the main display.
-		TERM_WriteString("\033[H\033[2J");
+		outstr("\033[H\033[2J");
 		
 		// Entry point to to parts of program.
 		switch(screen)
@@ -232,8 +231,8 @@ void high_scores_entry()
 
 void random_entry()
 {
-	TERM_WriteString("Generating Game\r\n");
-	TERM_WriteString("Please Wait...\r\n");
+	outstr("Generating Game\r\n");
+	outstr("Please Wait...\r\n");
 	
 	generate_grid(TCNT);
 	
