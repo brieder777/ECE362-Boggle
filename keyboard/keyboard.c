@@ -9,7 +9,7 @@
 #include <mc9s12c32.h>
 #include "keyboard.h"
 
-unsigned char keyboard_char_buff;
+unsigned char keyboard_last_code;
 
   // Initialize keyboard frame
   static union {
@@ -47,7 +47,7 @@ interrupt 6 void IRQ_ISR(void)
     else if(keyboard_frame.bytes.low == 0xF0)
       breakflag = 1;
     else
-      keyboard_char_buff = keyboard_frame.bytes.low;
+      keyboard_last_code = keyboard_frame.bytes.low;
   } 
   
   // Increment number of bits read with modulus

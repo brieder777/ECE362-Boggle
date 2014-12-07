@@ -61,7 +61,7 @@ typedef enum {
 } ScanCode;
 
  // Last scan code that was read -- needs to be translated
-extern unsigned char keyboard_char_buff;
+extern unsigned char keyboard_last_code;
 
  /**
  * Interrupt service routine triggered by the keyboard through the IRQ
