@@ -64,11 +64,17 @@
 #include "derivative.h"      /* derivative-specific definitions */
 #include <mc9s12c32.h>
 
+#include <terminal.h>
+#include <stdio.h>
 #include "game_logic/boggle.h"
+#include "keyboard/keyboard.h"
+#include "course_includes/our_termio.h"
 
 /* All functions after main should be initialized here */
 void main_menu_entry(void);
 void high_scores_entry(void);
+void random_entry(void);
+void seed_entry(void);
 void game_entry(void);
 void game_over_entry(void);
 
@@ -79,10 +85,14 @@ void game_over_entry(void);
 enum {
 	MAIN_MENU,
 	HIGH_SCORES,
+	RANDOM,
+	SEED,
 	GAME,
 	GAME_OVER
 } screen = MAIN_MENU;
 
+int tim_cnt = 0;	// Hundredth-second counter
+char second = 0;	// One-second flag
 
 /* Special ASCII characters */
 #ifndef CR
@@ -123,6 +133,14 @@ void initializations(void)
 	PORTB = 0x10; //assert DTR pin on COM port
 
 	/* Initialize peripherals */
+	
+	// Initialize TIM Ch 7 for periodic interrupts at 100 Hz
+	TSCR1_TEN = 1;	// Enable timer subsystem
+	TIOS_IOS7 = 1;	// Set Ch 7 to output compare mode
+	TSCR2_PR = 7;	// Prescale clock to 24 MHz / 2^7 = 187.5 KHz 
+	TSCR2_TCRE = 1;	// Reset after OC7
+	TC7 = 1875;		// Scale clock to 187.5 KHz / 1875 = 100 Hz
+	TIE_C7I = 1;	// Enable interrupts
 
 	/* Initialize interrupts */
 
@@ -138,17 +156,27 @@ void main(void)
 {
 	DisableInterrupts
 	initializations();
+	keyboard_init();
 	EnableInterrupts;
 
 	for(;;)
 	{
 		// Clear the main display.
+		TERM_WriteString("\033[H\033[2J");
 		
 		// Entry point to to parts of program.
 		switch(screen)
 		{
 			case MAIN_MENU:
 				main_menu_entry();
+				break;
+				
+			case RANDOM:
+				random_entry();
+				break;
+				
+			case SEED:
+				seed_entry();
 				break;
 				
 			case HIGH_SCORES:
@@ -169,10 +197,28 @@ void main(void)
 
 void main_menu_entry()
 {
+	ScanCode code;
+	
+	TERM_WriteString("   ECE 362 Boggle   \r\n");
+	TERM_WriteString("\r\n");
+	TERM_WriteString("1. Start Random Game\r\n");
+	TERM_WriteString("2. Enter Seed");
+	
 	while(1)
 	{
-		
-		
+		while((code = keyboard_last_code) == 0);
+		keyboard_last_code = 0;
+
+		if(code == ONE)
+		{
+			screen = RANDOM;
+			break;
+		}
+		else if(code == TWO)
+		{
+			screen = SEED;
+			break;
+		}
 	}
 }
 
@@ -182,6 +228,29 @@ void high_scores_entry()
 	{
 		
 	}
+}
+
+void random_entry()
+{
+	TERM_WriteString("Generating Game\r\n");
+	TERM_WriteString("Please Wait...\r\n");
+	
+	generate_grid(TCNT);
+	
+	outnum(TCNT, 5); // (Debug the random number)
+	
+	screen = GAME;
+	
+	while(1);
+}
+
+void seed_entry()
+{
+	int seed;
+	
+	
+	
+	generate_grid(seed);
 }
 
 void game_entry()
@@ -224,7 +293,10 @@ interrupt 15 void TIM_ISR(void)
 	// clear TIM CH 7 interrupt flag 
 	TFLG1 = TFLG1 | 0x80;
 
-
+	tim_cnt = (tim_cnt + 1) % 100;
+	
+	if(tim_cnt == 0)
+		second = 1;
 }
 
 /*
