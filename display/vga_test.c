@@ -63,7 +63,7 @@ void initializations(void)
 	TIOS_IOS7 = 1;	// Set Ch 7 to output compare mode
 	TSCR2_PR = 0;	// No prescale
 	TSCR2_TCRE = 1;	// Reset after OC7
-	TC7 = 799;		// Scale clock to 25 MHz / 800 = 31.25 KHz
+	TC7 = 800;		// Scale clock to 25 MHz / 800 = 31.25 KHz
 	TIE_C7I = 1;	// Enable interrupts
 
 	/* Initialize interrupts */
@@ -83,6 +83,8 @@ void initializations(void)
 
 }
 
+extern void set_video_pointer(char* addr);
+
 /*	 		  			 		  		
  ***********************************************************************
 Main
@@ -93,6 +95,8 @@ void main(void)
 	DisableInterrupts
 	initializations();
 	EnableInterrupts;
+	
+	set_video_pointer(video_buffer);
 
 	for(;;)
 	{
@@ -124,10 +128,10 @@ extern void video_draw(void);
  */
 interrupt 15 void TIM_ISR(void)
 {
+	video_draw();
+
 	// clear TIM CH 7 interrupt flag 
 	TFLG1 = TFLG1 | 0x80;
-
-	video_draw();
 }
 
 /*

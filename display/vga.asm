@@ -172,13 +172,25 @@ video_draw:
            ; TOTAL FROM START=(3)+(1+3+1)+(1+1)+(3+4)=17
  
   hs_pulse:  
-            ; ----- BLANK HORIZONTAL SYNC PULSE = 128 cycles -----
+            ; ----- BLANK HORIZONTAL SYNC PULSE = 96 cycles -----
                                ; delay from entry = (3 cycles)
             dec vid_blanks     ; dec blank counter  (4 cycles)
-            nop2                       ; burn time  (2 cycles)
-            nop                        ; burn time  (1 cycle)
-            jsr nop100                 ; burn time  (100 cycles)
-            jsr nop10                  ; burn time  (10 cycles)
+
+;            nop2                       ; burn time  (2 cycles)
+;            nop                        ; burn time  (1 cycle)
+;            jsr nop100                 ; burn time  (100 cycles)
+;            jsr nop10                  ; burn time  (10 cycles)
+
+             jsr nop10            ; burn time (81 cycles)
+             jsr nop10
+             jsr nop10
+             jsr nop10
+             jsr nop10
+             jsr nop10
+             jsr nop10
+             jsr nop10
+             nop
+
 ;            movb #$80,MCFLG ; clear interrupt flag  (4 cycles)
             nop2
             nop2
@@ -197,15 +209,34 @@ video_draw:
             nop2
             nop2
  a_hs_pulse:
-            ; ----- ACTIVE HORIZONTAL SYNC PULSE = 128 cycles -----
+            ; ----- ACTIVE HORIZONTAL SYNC PULSE = 96 cycles -----
                                ; delay from entry = (4 cycles)
-            jsr nop100                 ; burn time  (120 cycles)
-            jsr nop10                  
-            jsr nop10 
+;            jsr nop100                 ; burn time  (120 cycles)
+;            jsr nop10                  
+;            jsr nop10
+
+            jsr nop10           ; burn time (92 cycles)
+            jsr nop10
+            jsr nop10
+            jsr nop10
+            jsr nop10
+            jsr nop10
+            jsr nop10
+            jsr nop10
+            jsr nop10
+            nop2
+
             bset PTM,%00000001         ; raise HS   (4 cycles)
             
-            ; ----- HORIZONTAL BACK PORCH = 16 cycles -----
-            jsr nop10     ; burn time               (10 cycles)
+            ; ----- HORIZONTAL BACK PORCH = 48 cycles -----
+;            jsr nop10     ; burn time               (10 cycles)
+
+            jsr nop10       ; burn time (42 cycles)
+            jsr nop10
+            jsr nop10
+            jsr nop10
+            nop2
+
             tfr X, Y      ; line start addr -> Y    (1 cycle)
             movb X, PTT ; write first pixel       (5 cycles)
             
@@ -260,11 +291,23 @@ video_draw:
             bclr PTM,%00000001   ; lower HS        (4 cycles)
             ; TOTAL=(1)+(3+1+1)+(3+2+1+4)=16
 
-            ; ----- NEXT HORIZONTAL SYNC PULSE = 128 cycles -----
-            jsr nop100           ; burn time              (100 cycles)
-            jsr nop10            ; burn time              (10 cycles)
-            nop5                 ; burn time              (5 cycles)
-            movb #40, vid_blanks ; 40 blank lines         (4 cycles)           
+            ; ----- NEXT HORIZONTAL SYNC PULSE = 96 cycles -----
+;            jsr nop100           ; burn time              (100 cycles)
+;            jsr nop10            ; burn time              (10 cycles)
+;            nop5                 ; burn time              (5 cycles)
+
+            jsr nop10             ; burn time (83 cycles)
+            jsr nop10
+            jsr nop10
+            jsr nop10
+            jsr nop10
+            jsr nop10
+            jsr nop10
+            jsr nop10
+            nop2
+            nop
+
+            movb #41, vid_blanks ; 40 blank lines         (4 cycles)           
 ;            movb #$80,MCFLG      ; clear interrupt flag   (4 cycles)
             nop2
             nop2
