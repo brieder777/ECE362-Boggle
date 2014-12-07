@@ -60,27 +60,18 @@
 ***********************************************************************
 */
 
-//@TODO: keyboard_init
-
 #include <hidef.h>      /* common defines and macros */
 #include "derivative.h"      /* derivative-specific definitions */
 #include <mc9s12c32.h>
 #include "keyboard.h"
 
-union {
-    int word;
-    struct {
-      unsigned char high;
-      unsigned char low;
-    } bytes;
-  } keyboard_frame;
+
 
 /* All functions after main should be initialized here */
 char inchar(void);
 void outchar(char x);
 
 /* Variable declarations */ 
-static unsigned char keyboard_char_buff;      
 
 /* Special ASCII characters */
 #define CR 0x0D		// ASCII return 
@@ -126,19 +117,6 @@ void  initializations(void) {
   SCICR2 =  0x0C; //initialize SCI for program-driven operation
   DDRB   =  0x10; //set PB4 for output mode
   PORTB  =  0x10; //assert DTR pin on COM port
-
-  //Keyboard initializations
-  // Initialize the Port M 0 and 1 as input and output respectively
-  DDRM_DDRM0 = 0; // Data received from keyboard
-  DDRM_DDRM1 = 1; // CLR signal sent to flip-flop
-  DDRT = 1;
-
-/* Initialize peripherals */
-            
-/* Initialize interrupts */
-	 INTCR_IRQE = 0;
-   INTCR_IRQEN = 1;
-	 PTM_PTM1 = 1;
 }
 
 	 		  			 		  		
@@ -148,8 +126,10 @@ Main
 ***********************************************************************
 */
 void main(void) {
+
   	DisableInterrupts
-	initializations(); 		  			 		  		
+	initializations();
+  keyboard_init(); 		  			 		  		
 	EnableInterrupts;
 
  for(;;) {
@@ -167,110 +147,6 @@ void main(void) {
    
 }   /* do not leave main */
 
-/*
-***********************************************************************                       
-  IRQ triggered interrupt service routine       
-***********************************************************************
-*/
-
-unsigned char translate_keyboard_character(unsigned char buff_char)
-{
-  // outbin(buff_char);
-  switch(buff_char) {
-    case KEYBOARD_A:
-      return 'A';
-    case KEYBOARD_B:
-      return 'B';
-    case KEYBOARD_C:
-      return 'C';
-    case KEYBOARD_D:
-      return 'D';
-    case KEYBOARD_E:
-      return 'E';
-    case KEYBOARD_F:
-      return 'F';
-    case KEYBOARD_G:
-      return 'G';
-    case KEYBOARD_H:
-      return 'H';
-    case KEYBOARD_I:
-      return 'I';
-    case KEYBOARD_J:
-      return 'J';
-    case KEYBOARD_K:
-      return 'K';
-    case KEYBOARD_L:
-      return 'L';
-    case KEYBOARD_M:
-      return 'M';
-    case KEYBOARD_N:
-      return 'N';
-    case KEYBOARD_O:
-      return 'O';
-    case KEYBOARD_P:
-      return 'P';
-    case KEYBOARD_Q:
-      return 'Q';
-    case KEYBOARD_R:
-      return 'R';
-    case KEYBOARD_S:
-      return 'S';
-    case KEYBOARD_T:
-      return 'T';
-    case KEYBOARD_U:
-      return 'U';
-    case KEYBOARD_V:
-      return 'V';
-    case KEYBOARD_W:
-      return 'W';
-    case KEYBOARD_X:
-      return 'X';
-    case KEYBOARD_Y:
-      return 'Y';
-    case KEYBOARD_Z:
-      return 'Z';
-    case KEYBOARD_ENTER:
-      return '\n';
-    case KEYBOARD_SPACE:
-      return ' ';
-    case KEYBOARD_BACKSPACE:
-      return '\b';
-    default:
-      return '\0';
-  }
-}
-
-static unsigned char count = 0;
-static unsigned char breakflag = 0;
-
-interrupt 6 void IRQ_ISR(void)
-{
-  // Send clear signal to flip-flop -- high, low, high
-  PTM_PTM1 = 1;
-  PTM_PTM1 = 0;
-  PTM_PTM1 = 1;
-
-  // Shift in only the bytes between start and parity
-  if(count >= 1 && count <= 8)
-  {
-    keyboard_frame.bytes.high = PTM_PTM0;
-    keyboard_frame.word = keyboard_frame.word >> 1;
-  }
-
-  // After 11 bits have been read, send the character out
-  if(count == 10)
-  {
-    if(breakflag==1)
-      breakflag = 0;
-    else if(keyboard_frame.bytes.low == 0xF0)
-      breakflag = 1;
-    else
-      keyboard_char_buff = keyboard_frame.bytes.low;
-  } 
-  
-  // Increment number of bits read with modulus
-  count = (count + 1) % 11;
-}
 
 /*
 ***********************************************************************                       
@@ -337,38 +213,7 @@ char inchar(void) {
 ***********************************************************************
 */
 
-void outbin_int(int x)
-{
-  unsigned char itr;
-  for(itr = 0; itr < 16; ++itr) {
-    outchar((x & 0x01) + '0');
-    x = x >> 1;
-  }
-  outchar('\r');
-  outchar('\n');
-}
 
-void outbin_noout(char x)
-{
-  unsigned char itr;
-  for(itr = 0; itr < 8; ++itr) {
-    outchar((x & 0x01) + '0');
-    x = x >> 1;
-  }
-  outchar('\r');
-  outchar('\n');
-}
-
-void outbin(char x)
-{
-  unsigned char itr;
-  for(itr = 0; itr < 8; ++itr) {
-    outchar((x & 0x01) + '0');
-    x = x >> 1;
-  }
-  outchar('\r');
-  outchar('\n');
-}
 
 void outchar(char x) {
   /* sends a character to the terminal channel */

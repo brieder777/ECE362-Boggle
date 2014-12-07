@@ -9,34 +9,59 @@
  * This library was made to be compatible with the CodeWarrior compiler.
  */
 
- #define KEYBOARD_A 0x1C
- #define KEYBOARD_A_backwards 0xC1
- #define KEYBOARD_B 0x32
- #define KEYBOARD_C 0x21
- #define KEYBOARD_D 0x23
- #define KEYBOARD_E 0x24
- #define KEYBOARD_F 0x2B
- #define KEYBOARD_G 0x34
- #define KEYBOARD_H 0x33
- #define KEYBOARD_I 0x43
- #define KEYBOARD_J 0x3B
- #define KEYBOARD_K 0x42
- #define KEYBOARD_L 0x4B
- #define KEYBOARD_M 0x3A
- #define KEYBOARD_N 0x31
- #define KEYBOARD_O 0x44
- #define KEYBOARD_P 0x4D
- #define KEYBOARD_Q 0x15
- #define KEYBOARD_R 0x2D
- #define KEYBOARD_S 0x1B
- #define KEYBOARD_T 0x2C
- #define KEYBOARD_U 0x3C
- #define KEYBOARD_V 0x2A
- #define KEYBOARD_W 0x1D
- #define KEYBOARD_X 0x22
- #define KEYBOARD_Y 0x35
- #define KEYBOARD_Z 0x1A
- #define KEYBOARD_ENTER 0x5A
+#ifndef BOARD_H
+#define	BOARD_H
+
+#ifdef	__cplusplus
+extern "C" {
+#endif
+
+// @TODO
+typedef enum {
+	A = 0x1C,
+	B = 0x32,
+	C = 0x21,
+	D = 0x23,
+	E = 0x24,
+	F = 0x2B,
+	G = 0x34,
+	H = 0x33,
+	I = 0x43,
+	J = 0x3B,
+	K = 0x42,
+	L = 0x4B,
+	M = 0x3A,
+	N = 0x31,
+	O = 0x44,
+	P = 0x4D,
+	Q = 0x15,
+	R = 0x2D,
+	S = 0x1B,
+	T = 0x2C,
+	U = 0x3C,
+	V = 0x2A,
+	W = 0x1D,
+	X = 0x22,
+	Y = 0x35,
+	Z = 0x1A,
+	ENTER = 0x5A,
+	BACKSPACE = 0x66,
+	SPACE = 0x29,
+	ESCAPE = 0x76,
+	ONE = 0x16,
+	TWO = 0x1E,
+	THREE = 0x26, 
+	FOUR = 0x25,
+	FIVE = 0x2E,
+	SIX = 0x36,
+	SEVEN = 0x3D,
+	EIGHT = 0x3E,
+	NINE = 0x46,
+	ZERO = 0x45
+} ScanCode;
+
+ // Last scan code that was read -- needs to be translated
+extern unsigned char keyboard_char_buff;
 
  /**
  * Interrupt service routine triggered by the keyboard through the IRQ
@@ -48,34 +73,19 @@
  */
  interrupt 6 void IRQ_ISR(void);
 
- /**
- * Writes a character to buffer after removing parity, start, and stop
- * bits.
- * 
- * Instead of returning a character, this function writes to the global
- * character buffer 'keyboard_char_buff'.
- *
- */
- void keyboard_char_to_buff(void);
-
 /**
  * Uses PS/2 Scan Code Set 2 to change keyboard input to actual characters.
  * 
  * Returns the character of the pressed key.
  *
  */
- unsigned char translate_keyboard_character(unsigned char buff_char);
+ unsigned char translate_keyboard_character(ScanCode buff_char);
 
-/**
- * General purpose debugging function that writes a character in binary
- * to the SCI serial port.
- *
- */
- void outbin(char x);
+ void keyboard_init(void);
 
- /**
- * General purpose debugging function that writes an integer in binary
- * to the SCI serial port.
- *
- */
- void outbin_int(int x);
+
+#ifdef	__cplusplus
+}
+#endif
+
+#endif	/* BOARD_H */
