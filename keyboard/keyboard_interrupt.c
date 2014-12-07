@@ -60,31 +60,27 @@
 ***********************************************************************
 */
 
+//@TODO: keyboard_init
+
 #include <hidef.h>      /* common defines and macros */
 #include "derivative.h"      /* derivative-specific definitions */
 #include <mc9s12c32.h>
 #include "keyboard.h"
 
-typedef union {
+union {
     int word;
     struct {
-      char high;
-      char low;
+      unsigned char high;
+      unsigned char low;
     } bytes;
-  } Frame;
+  } keyboard_frame;
 
 /* All functions after main should be initialized here */
 char inchar(void);
 void outchar(char x);
 
-/* Variable declarations */
-unsigned char keyboard_bit = 0;
-int keyboard_character = 0;
-unsigned char keyboard_buff_itr = 0;
-unsigned char keyboard_char_buff[10];
-// unsigned char frame_read;
-Frame keyboard_frame;
-   	   			 		  			 		       
+/* Variable declarations */ 
+static unsigned char keyboard_char_buff;      
 
 /* Special ASCII characters */
 #define CR 0x0D		// ASCII return 
@@ -142,7 +138,7 @@ void  initializations(void) {
 /* Initialize interrupts */
 	 INTCR_IRQE = 0;
    INTCR_IRQEN = 1;
-	 
+	 PTM_PTM1 = 1;
 }
 
 	 		  			 		  		
@@ -159,7 +155,12 @@ void main(void) {
  for(;;) {
   
 /* < start of your main loop > */ 
-    
+    if(keyboard_char_buff)
+    {
+      outchar(translate_keyboard_character(keyboard_char_buff));
+
+      keyboard_char_buff = 0;
+    }
     
   
    } /* loop forever */
@@ -230,58 +231,45 @@ unsigned char translate_keyboard_character(unsigned char buff_char)
       return 'Z';
     case KEYBOARD_ENTER:
       return '\n';
+    case KEYBOARD_SPACE:
+      return ' ';
+    case KEYBOARD_BACKSPACE:
+      return '\b';
     default:
-      return '!';
+      return '\0';
   }
 }
 
-void keyboard_char_to_buff(void)
-{
-  unsigned char itr;
-  //keyboard_character = keyboard_character >> 1;
-  keyboard_char_buff[keyboard_buff_itr] = 0x00;
-
-
-  for(itr = 0; itr < 8; ++itr) {
-    keyboard_char_buff[keyboard_buff_itr] = keyboard_char_buff[keyboard_buff_itr] << 1;
-    keyboard_char_buff[keyboard_buff_itr] |= (keyboard_character & 0x01);
-    keyboard_character = keyboard_character >> 1;
-  }
-
-
-  //keyboard_char_buff[keyboard_buff_itr] = 
-    //translate_keyboard_character(keyboard_char_buff[keyboard_buff_itr]);
-  
-}
-
-
+static unsigned char count = 0;
+static unsigned char breakflag = 0;
 
 interrupt 6 void IRQ_ISR(void)
 {
-
-
-  // // Send clear signal to flip-flop -- high, low, high
+  // Send clear signal to flip-flop -- high, low, high
   PTM_PTM1 = 1;
   PTM_PTM1 = 0;
   PTM_PTM1 = 1;
 
-  // The character has to be reset after every 11th bit
-  if(keyboard_bit == 11) {
-    keyboard_bit = 0;
-    keyboard_char_to_buff();
-    //outbin_int(keyboard_character);
-    keyboard_character = 0;
-    outchar(keyboard_char_buff[keyboard_buff_itr]);
-    //outbin_noout(keyboard_char_buff[keyboard_buff_itr]);
-    ++keyboard_buff_itr;
+  // Shift in only the bytes between start and parity
+  if(count >= 1 && count <= 8)
+  {
+    keyboard_frame.bytes.high = PTM_PTM0;
+    keyboard_frame.word = keyboard_frame.word >> 1;
   }
 
-  // Read data in from the keyboard
-  keyboard_character = keyboard_character << 1;
-  keyboard_character |= PTM_PTM0;
-  ++keyboard_bit;
-
- 
+  // After 11 bits have been read, send the character out
+  if(count == 10)
+  {
+    if(breakflag==1)
+      breakflag = 0;
+    else if(keyboard_frame.bytes.low == 0xF0)
+      breakflag = 1;
+    else
+      keyboard_char_buff = keyboard_frame.bytes.low;
+  } 
+  
+  // Increment number of bits read with modulus
+  count = (count + 1) % 11;
 }
 
 /*
@@ -292,7 +280,7 @@ interrupt 6 void IRQ_ISR(void)
 
 interrupt 7 void RTI_ISR(void)
 {
-  	// clear RTI interrupt flagt 
+  	// clear RTI interrupt flag
   	CRGFLG = CRGFLG | 0x80; 
  
 
