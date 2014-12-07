@@ -9,7 +9,8 @@
 #include <mc9s12c32.h>
 #include "keyboard.h"
 
-unsigned char keyboard_last_code;
+// Last scan code that was read -- needs to be translated
+static unsigned char keyboard_last_code;
 
   // Initialize keyboard frame
   static union {
@@ -65,6 +66,18 @@ void keyboard_init(void)
   INTCR_IRQE = 0;
   INTCR_IRQEN = 1;
   PTM_PTM1 = 1;
+}
+
+ScanCode keyboard_getcode()
+{
+	ScanCode code = keyboard_last_code;
+	keyboard_last_code = 0;
+	return keyboard_last_code;
+}
+
+char keyboard_getchar()
+{
+	return translate_keyboard_character(keyboard_getcode());
 }
 
 unsigned char translate_keyboard_character(ScanCode buff_char)
