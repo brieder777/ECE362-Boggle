@@ -198,10 +198,10 @@ void main_menu_entry()
 {
 	ScanCode code;
 	
-	TERM_WriteString("   ECE 362 Boggle   \r\n");
-	TERM_WriteString("\r\n");
-	TERM_WriteString("1. Start Random Game\r\n");
-	TERM_WriteString("2. Enter Seed");
+	outstr("   ECE 362 Boggle   \r\n");
+	outstr("\r\n");
+	outstr("1. Start Random Game\r\n");
+	outstr("2. Enter Seed");
 	
 	while(1)
 	{
