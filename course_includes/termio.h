@@ -32,6 +32,20 @@ char inchar(void);
  */
 void outchar(char x);
 
+/**
+ * General purpose debugging function that writes a character in binary
+ * to the SCI serial port.
+ *
+ */
+ void outbin(char x);
+
+ /**
+ * General purpose debugging function that writes an integer in binary
+ * to the SCI serial port.
+ *
+ */
+ void outbin_int(int x);
+
 
 #ifdef	__cplusplus
 }

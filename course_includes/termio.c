@@ -24,3 +24,25 @@ void outchar(char x)
 	while(!(SCISR1 & 0x80)); /* wait for output buffer empty */
 	SCIDRL = x;
 }
+
+void outbin_int(int x)
+{
+  unsigned char itr;
+  for(itr = 0; itr < 16; ++itr) {
+    outchar((x & 0x01) + '0');
+    x = x >> 1;
+  }
+  outchar('\r');
+  outchar('\n');
+}
+
+void outbin(char x)
+{
+  unsigned char itr;
+  for(itr = 0; itr < 8; ++itr) {
+    outchar((x & 0x01) + '0');
+    x = x >> 1;
+  }
+  outchar('\r');
+  outchar('\n');
+}
