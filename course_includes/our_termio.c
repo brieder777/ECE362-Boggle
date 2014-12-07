@@ -51,7 +51,7 @@ void outstr(char* str)
 {
 	while(*str != '\0')
 	{
-		bco(*str);
+		outchar(*str);
 		str++;
 	}
 }
@@ -68,5 +68,5 @@ void outnum(unsigned int number, unsigned char digits)
 		number /= 10;
 	}
 	
-	pmsg(string);
+	outstr(string);
 }
