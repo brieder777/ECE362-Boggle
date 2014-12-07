@@ -81,6 +81,13 @@ extern unsigned char keyboard_last_code;
  */
  unsigned char translate_keyboard_character(ScanCode buff_char);
 
+/**
+ * Sets registers to allow for keyboard input.
+ * 
+ * Instead of returning anything, this function sets specific registers to allow
+ * manipulation of Port M and intializes interrupts for IRQ.
+ *
+ */
  void keyboard_init(void);
 
 
