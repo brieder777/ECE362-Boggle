@@ -16,7 +16,6 @@
 extern "C" {
 #endif
 
-// @TODO
 typedef enum {
 	A = 0x1C,
 	B = 0x32,
