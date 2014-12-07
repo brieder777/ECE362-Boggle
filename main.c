@@ -205,8 +205,7 @@ void main_menu_entry()
 	
 	while(1)
 	{
-		while((code = keyboard_last_code) == 0);
-		keyboard_last_code = 0;
+		while((code = keyboard_getcode()) == 0);
 
 		if(code == ONE)
 		{
