@@ -37,15 +37,27 @@ void outchar(char x);
  * to the SCI serial port.
  *
  */
- void outbin(char x);
+void outbin(char x);
 
- /**
+/**
  * General purpose debugging function that writes an integer in binary
  * to the SCI serial port.
  *
  */
- void outbin_int(int x);
+void outbin_int(int x);
 
+/**
+ * Output a string to an SCI terminal.
+ * @param str
+ */
+void outstr(char* str);
+
+/**
+ * Output a number to an SCI terminal.
+ * @param number
+ * @param digits
+ */
+void outnum(unsigned int number, unsigned char digits);
 
 #ifdef	__cplusplus
 }

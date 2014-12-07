@@ -46,3 +46,27 @@ void outbin(char x)
   outchar('\r');
   outchar('\n');
 }
+
+void outstr(char* str)
+{
+	while(*str != '\0')
+	{
+		bco(*str);
+		str++;
+	}
+}
+
+void outnum(unsigned int number, unsigned char digits)
+{
+	char string[6];
+	
+	string[digits] = '\0';
+	
+	while(digits > 0)
+	{
+		string[--digits] = (number % 10) + '0';
+		number /= 10;
+	}
+	
+	pmsg(string);
+}
