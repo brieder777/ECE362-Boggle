@@ -28,4 +28,4 @@
 *.hex
 
 # NetBeans Stuff
-/nbproject/
+/nbproject/private/
