@@ -9,6 +9,9 @@
 
 #include "boggle.h"
 
+// We need to initialize boggle_grid here for CodeWarrior, because CodeWarrior.
+Grid boggle_grid;
+
 /*
  * Implementation Details for `generate_grid`
  * ==========================================

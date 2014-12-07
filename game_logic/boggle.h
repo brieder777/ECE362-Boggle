@@ -40,7 +40,7 @@ typedef char Grid[BOGGLE_SIZE][BOGGLE_SIZE];
 //
 // If we want to be able to use the letters QU, we would need to change this
 // structure.
-Grid boggle_grid;
+extern Grid boggle_grid;
 
 
 
