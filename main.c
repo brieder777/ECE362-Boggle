@@ -153,7 +153,6 @@ Main
  */
 void main(void)
 {
-	char test;
 	DisableInterrupts
 	initializations();
 	keyboard_init();
@@ -240,8 +239,6 @@ void random_entry()
 	outnum(TCNT, 5); // (Debug the random number)
 	
 	screen = GAME;
-	
-	while(1);
 }
 
 void seed_entry()
@@ -263,7 +260,7 @@ void seed_entry()
     
     outnum(seed, 5);
     
-    while(1);
+    screen = GAME;
 }
 
 void game_entry()
@@ -271,23 +268,36 @@ void game_entry()
 	// Display grid
 	int i;
 	int j;
+	int tim_rem = 120;
 	for(i = 0; i < BOGGLE_SIZE; i++)
 	{
-		for(j = 0; j < BOGGLE_SIZE; j++)
-			outchar(boggle_grid[i][j]);
-
 		outstr("\r\n");
+
+		for(j = 0; j < BOGGLE_SIZE; j++)
+		{
+			outchar(boggle_grid[i][j]);
+			outchar(' ');
+		}
 	}
 
 	boggle_grid;
-	while(1)
+	outchar('\n');
+	outstr("Time Remaining:\n\r");
+	while(tim_rem != 0)
 	{
-		
+		if(second == 1) {
+			second = 0;
+			tim_rem -= 1;
+			outnum(tim_rem, 3);
+			outstr("\b\b\b");
+		}
 	}
+	screen = GAME_OVER;
 }
 
 void game_over_entry()
 {
+	outstr("\n\rGame Over!");
 	while(1)
 	{
 		

@@ -77,7 +77,13 @@ ScanCode keyboard_getcode()
 
 char keyboard_getchar()
 {
-	return translate_keyboard_character(keyboard_getcode());
+	ScanCode code;
+	
+	code = keyboard_getcode();
+	if(code)
+		return translate_keyboard_character(code);
+	else
+		return 0;
 }
 
 unsigned char translate_keyboard_character(ScanCode buff_char)
