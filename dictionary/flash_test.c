@@ -64,19 +64,20 @@
 #include "derivative.h"      /* derivative-specific definitions */
 #include <mc9s12c32.h>
 
+#include "../course_includes/our_termio.h"
+
 union Address{
   long addr;
   char bytes[4];
 }; 
 
 /* All functions after main should be initialized here */
-char inchar(void);
-void outchar(char x);  
 void spi_flash_shiftout(char x);
-char spi_flash_shiftin();
+char spi_flash_shiftin(void);
 void delay(unsigned int x);
 char spi_flash_read_addr(long addr);
-
+void spi_flash_read_word(long addr, char* buffer);
+void spi_flash_read_next_word(long addr, char* buffer);
 
 
 /* Variable declarations */
@@ -102,6 +103,9 @@ char spi_flash_read_addr(long addr);
 /*spi flash instruction characters*/
 #define spi_flash_read 0x03
 
+#define CS_PIN PTT_PTT3
+
+#define dict_length 653339
 	 	   		
 /*	 	   		
 ***********************************************************************
@@ -133,7 +137,7 @@ void  initializations(void) {
 /* Initialize peripherals */
   SPICR1 = 0x50;  //interrupts disabled, power on, master mode, active high clk,msb first
   SPICR2 = 0;     //disable bi-directional mode
-  SPIBR = 0x01;    //set baud rate to 6 Mbs (sppr=0, spr=1)
+  SPIBR = 0;      // No scale - set baud rate to 12 Mbs (sppr=0, spr=0)
              
 /* Initialize interrupts */
   DDRT_DDRT3 = 1;//pt3 as output(/cs)	 
@@ -148,14 +152,29 @@ Main
 ***********************************************************************
 */
 void main(void) {
-  long i;
-  DisableInterrupts
-	initializations(); 		  			 		  		
+	long i;
+	char string[100];
+
+
+	DisableInterrupts
+	initializations();
 	EnableInterrupts;
-	delay(100);
-	for(i=0;i<40;i++) {	  
-    outchar(spi_flash_read_addr(i));
+	//	delay(100);
+	//	for(i=0;i<40;i++) {	  
+	//    outchar(spi_flash_read_addr(i));
+	//	}
+
+//	spi_flash_read_next_word(0, string);
+//
+//	outstr(string);
+	
+	for(i = 0; i < dict_length; i++)
+	{
+		outchar(spi_flash_read_addr(i));
 	}
+	
+	outstr("Done");
+	
   for(;;) {
   
 /* < start of your main loop > */ 
@@ -182,22 +201,68 @@ char spi_flash_read_addr(long addr)
   h=a.bytes[1];
   m=a.bytes[2];
   l=a.bytes[3];
-  PTT_PTT3 = 0;//assert /cs to signal start of instruction
+  CS_PIN = 0;//assert /cs to signal start of instruction
   spi_flash_shiftout(spi_flash_read);
   spi_flash_shiftout(h);//1st addr byte 
   spi_flash_shiftout(m);//2nd addr byte
   spi_flash_shiftout(l);//3rd addr byte
+  asm{		// We need at least 5 cycles of delay here for reasons unknown. :(
+	  nop
+	  nop
+	  nop
+	  nop
+	  nop
+  }
   spi_flash_shiftin();//clear spif
   spi_flash_shiftout(0xFF);
-  PTT_PTT3 = 1;//negate /cs to signal end of instruction
-  return spi_flash_shiftin();
+  h =  spi_flash_shiftin();
+  CS_PIN = 1;//negate /cs to signal end of instruction
+  
+  return h;
+}
+
+/*
+ * Read a word terminated with a newline, string starting at addr.
+ */
+void spi_flash_read_word(long addr, char* buffer)
+{
+	char read;
+	
+	read = spi_flash_read_addr(addr);
+	while(read != '\n')
+	{
+		*buffer = read;
+		buffer++;
+		
+		addr++;
+		read = spi_flash_read_addr(addr);
+	}
+	
+	*buffer = '\0';
+}
+
+/*
+ * Look for the next newline character, then read the word after it to buffer.
+ */
+void spi_flash_read_next_word(long addr, char* buffer)
+{
+	char read;
+	
+	read = spi_flash_read_addr(addr);
+	while(read != '\n')
+	{
+		addr++;
+		read = spi_flash_read_addr(addr);
+	}
+	
+	spi_flash_read_word(addr + 1, buffer);
 }
 
 void spi_flash_shiftout(char x)
 {
   while(SPISR_SPTEF != 1);//read the SPTEF bit, continue if bit is 1
   SPIDR = x;                 //write data to SPI data register
-  delay(30); 
+//  delay(5);
 }
 
 char spi_flash_shiftin() 
@@ -249,34 +314,4 @@ interrupt 20 void SCI_ISR(void)
  
 
 
-}
-
-/*
-***********************************************************************
- Character I/O Library Routines for 9S12C32 
-***********************************************************************
- Name:         inchar
- Description:  inputs ASCII character from SCI serial port and returns it
- Example:      char ch1 = inchar();
-***********************************************************************
-*/
-
-char inchar(void) {
-  /* receives character from the terminal channel */
-        while (!(SCISR1 & 0x20)); /* wait for input */
-    return SCIDRL;
-}
-
-/*
-***********************************************************************
- Name:         outchar    (use only for DEBUGGING purposes)
- Description:  outputs ASCII character x to SCI serial port
- Example:      outchar('x');
-***********************************************************************
-*/
-
-void outchar(char x) {
-  /* sends a character to the terminal channel */
-    while (!(SCISR1 & 0x80));  /* wait for output buffer empty */
-    SCIDRL = x;
 }
