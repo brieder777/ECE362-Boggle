@@ -217,6 +217,7 @@ void main_menu_entry()
 			screen = SEED;
 			break;
 		}
+		outstr("Problem");
 	}
 }
 
@@ -251,6 +252,7 @@ void seed_entry()
     while (keypress != '\n') {
         seed *= 10;
         seed += keypress;
+		outchar(keypress);
         while(keypress = keyboard_getchar() == 0);
     }
     outstr("Generating Game\r\n");
@@ -264,6 +266,18 @@ void seed_entry()
 
 void game_entry()
 {
+	// Display grid
+	int i;
+	int j;
+	for(i = 0; i < BOGGLE_SIZE; i++)
+	{
+		for(j = 0; j < BOGGLE_SIZE; j++)
+			outchar(boggle_grid[i][j]);
+
+		outstr("\r\n");
+	}
+
+	boggle_grid;
 	while(1)
 	{
 		
