@@ -153,6 +153,7 @@ Main
  */
 void main(void)
 {
+	char test;
 	DisableInterrupts
 	initializations();
 	keyboard_init();
@@ -246,14 +247,15 @@ void random_entry()
 void seed_entry()
 {
     int seed = 0;
-    int keypress;
+    char keypress;
+	
     outstr("Enter a seed:\r\n");
-    while (keypress = keyboard_getchar() == 0);
+    while ((keypress = keyboard_getchar()) == 0);
     while (keypress != '\n') {
         seed *= 10;
-        seed += keypress;
+        seed += keypress - '0';
 		outchar(keypress);
-        while(keypress = keyboard_getchar() == 0);
+        while((keypress = keyboard_getchar()) == 0);
     }
     outstr("Generating Game\r\n");
     outstr("Please Wait...\r\n");
