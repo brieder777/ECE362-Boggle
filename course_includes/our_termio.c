@@ -70,8 +70,3 @@ void outnum(unsigned int number, unsigned char digits)
 	
 	outstr(string);
 }
-
-void backspace_and_remove(void)
-{
-    outstr("\b \b");
-}
