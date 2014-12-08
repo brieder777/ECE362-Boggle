@@ -103,14 +103,6 @@ ScanCode keyboard_getcode(void);
  */
 char keyboard_getchar(void);
 
-/**
- * Intuitive backspace implementation.
- * 
- * Instead of returning, this function acts as a backspace in the normal
- * regard by erasing the previous character.
- */
-void backspace_and_remove(void);
-
 #ifdef	__cplusplus
 }
 #endif
