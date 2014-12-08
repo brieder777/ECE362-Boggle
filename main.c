@@ -244,11 +244,22 @@ void random_entry()
 
 void seed_entry()
 {
-	int seed;
-	
-	
-	
-	generate_grid(seed);
+    int seed = 0;
+    int keypress;
+    outstr("Enter a seed:\r\n");
+    while (keypress = keyboard_getchar() == 0);
+    while (keypress != '\n') {
+        seed *= 10;
+        seed += keypress;
+        while(keypress = keyboard_getchar() == 0);
+    }
+    outstr("Generating Game\r\n");
+    outstr("Please Wait...\r\n");
+    generate_grid(seed);
+    
+    outnum(seed, 5);
+    
+    while(1);
 }
 
 void game_entry()
