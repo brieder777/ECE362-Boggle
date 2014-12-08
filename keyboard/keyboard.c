@@ -72,7 +72,7 @@ ScanCode keyboard_getcode()
 {
 	ScanCode code = keyboard_last_code;
 	keyboard_last_code = 0;
-	return keyboard_last_code;
+	return code;
 }
 
 char keyboard_getchar()
