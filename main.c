@@ -217,7 +217,6 @@ void main_menu_entry()
 			screen = SEED;
 			break;
 		}
-		outstr("Problem");
 	}
 }
 
@@ -234,7 +233,7 @@ void random_entry()
 	outstr("Generating Game\r\n");
 	outstr("Please Wait...\r\n");
 	
-	generate_grid(TCNT);
+	generate_grid((TCNT == 0) ? 1 : TCNT);
 	
 	outnum(TCNT, 5); // (Debug the random number)
 	
@@ -256,7 +255,11 @@ void seed_entry()
     }
     outstr("Generating Game\r\n");
     outstr("Please Wait...\r\n");
-    generate_grid(seed);
+    
+	if(seed == 0)
+		seed = 1;
+	
+	generate_grid(seed);
     
     outnum(seed, 5);
     
@@ -269,6 +272,14 @@ void game_entry()
 	int i;
 	int j;
 	int tim_rem = 120;
+//	int tim_rem = 10;
+	ScanCode keypress=0;
+	char entered_wordlen = 0;
+	
+	char buffer[BOGGLE_WORDLEN+1];
+
+
+	// Display grid.
 	for(i = 0; i < BOGGLE_SIZE; i++)
 	{
 		outstr("\r\n");
@@ -280,28 +291,84 @@ void game_entry()
 		}
 	}
 
-	boggle_grid;
-	outchar('\n');
-	outstr("Time Remaining:\n\r");
+	
+	outstr("\n\rTime Remaining:\n\r");
 	while(tim_rem != 0)
 	{
+		// Output time remaining.
 		if(second == 1) {
 			second = 0;
 			tim_rem -= 1;
-			outnum(tim_rem, 3);
-			outstr("\b\b\b");
+//			outnum(tim_rem, 3);
+//			outstr("\b\b\b");
+//			outstr("\r\n");
 		}
+		
+		// Look for keyboard input.
+		
+			
+		keypress = keyboard_getcode();
+		if(keypress != 0)
+		{
+			
+			
+			if(keypress == BACKSPACE)
+			{
+				if(entered_wordlen > 0)
+				{
+					outstr("\b \b");
+					entered_wordlen--;
+				}
+			}
+			else if(keypress == ENTER)
+			{
+				if(entered_wordlen > 2)
+				{
+					buffer[entered_wordlen]= '\0';
+					while(entered_wordlen > 0)
+					{
+						outstr("\b \b");
+						entered_wordlen--;	
+					}
+					//perform validation of word in buffer
+					// @todo make this a function
+					if(validate_word_grid(buffer))
+					{
+						outstr("Maybe Yaaaaay!!!!");
+					}
+					else
+					{
+						outstr("Not yay");
+					}
+				}
+			}
+			else if(keypress == ESCAPE)
+			{
+				screen = MAIN_MENU;
+				return;
+			}
+			else if(entered_wordlen < BOGGLE_WORDLEN)
+			{
+				buffer[entered_wordlen] = translate_keyboard_character(keypress);
+				outchar(buffer[entered_wordlen]);
+				entered_wordlen++;
+			}
+		}	
 	}
 	screen = GAME_OVER;
 }
 
 void game_over_entry()
 {
-	outstr("\n\rGame Over!");
-	while(1)
-	{
-		
-	}
+	ScanCode keypress;
+	
+	outstr("\n\rGame Over!\n\r");
+	outstr("Press ENTER to\n\r");
+	outstr("play again!\n\r");
+	
+	while ((keypress = keyboard_getcode()) != ENTER);
+	
+	screen = MAIN_MENU;
 }
 
 
