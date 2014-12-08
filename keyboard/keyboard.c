@@ -86,11 +86,6 @@ char keyboard_getchar()
 		return 0;
 }
 
-void backspace_and_remove(void)
-{
-    outstr("\b \b");
-}
-
 unsigned char translate_keyboard_character(ScanCode buff_char)
 {
   switch(buff_char) {
