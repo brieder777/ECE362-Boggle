@@ -65,19 +65,9 @@
 #include <mc9s12c32.h>
 
 #include "../course_includes/our_termio.h"
-
-union Address{
-  long addr;
-  char bytes[4];
-}; 
+#include "spi_flash.h"
 
 /* All functions after main should be initialized here */
-void spi_flash_shiftout(char x);
-char spi_flash_shiftin(void);
-void delay(unsigned int x);
-char spi_flash_read_addr(long addr);
-void spi_flash_read_word(long addr, char* buffer);
-void spi_flash_read_next_word(long addr, char* buffer);
 
 
 /* Variable declarations */
@@ -101,11 +91,7 @@ void spi_flash_read_next_word(long addr, char* buffer);
 #define LINE2 = 0xC0	// LCD line 2 cursor position
 
 /*spi flash instruction characters*/
-#define spi_flash_read 0x03
 
-#define CS_PIN PTT_PTT3
-
-#define dict_length 653339
 	 	   		
 /*	 	   		
 ***********************************************************************
@@ -133,15 +119,6 @@ void  initializations(void) {
   SCICR2 =  0x0C; //initialize SCI for program-driven operation
   DDRB   =  0x10; //set PB4 for output mode
   PORTB  =  0x10; //assert DTR pin on COM port
-
-/* Initialize peripherals */
-  SPICR1 = 0x50;  //interrupts disabled, power on, master mode, active high clk,msb first
-  SPICR2 = 0;     //disable bi-directional mode
-  SPIBR = 0;      // No scale - set baud rate to 12 Mbs (sppr=0, spr=0)
-             
-/* Initialize interrupts */
-  DDRT_DDRT3 = 1;//pt3 as output(/cs)	 
-  PTT_PTT3 = 1;//initially /cs is negated    
 	      
 }
 
@@ -158,6 +135,7 @@ void main(void) {
 
 	DisableInterrupts
 	initializations();
+	spi_flash_init();
 	EnableInterrupts;
 	//	delay(100);
 	//	for(i=0;i<40;i++) {	  
@@ -191,85 +169,6 @@ void main(void) {
   SPI flash functions	 		  		
 ***********************************************************************
 */
-char spi_flash_read_addr(long addr) 
-{
-  union Address a;
-  char h;//high, middle, and low bytes
-  char m;
-  char l;
-  a.addr = addr;
-  h=a.bytes[1];
-  m=a.bytes[2];
-  l=a.bytes[3];
-  CS_PIN = 0;//assert /cs to signal start of instruction
-  spi_flash_shiftout(spi_flash_read);
-  spi_flash_shiftout(h);//1st addr byte 
-  spi_flash_shiftout(m);//2nd addr byte
-  spi_flash_shiftout(l);//3rd addr byte
-  asm{		// We need at least 5 cycles of delay here for reasons unknown. :(
-	  nop
-	  nop
-	  nop
-	  nop
-	  nop
-  }
-  spi_flash_shiftin();//clear spif
-  spi_flash_shiftout(0xFF);
-  h =  spi_flash_shiftin();
-  CS_PIN = 1;//negate /cs to signal end of instruction
-  
-  return h;
-}
-
-/*
- * Read a word terminated with a newline, string starting at addr.
- */
-void spi_flash_read_word(long addr, char* buffer)
-{
-	char read;
-	
-	read = spi_flash_read_addr(addr);
-	while(read != '\n')
-	{
-		*buffer = read;
-		buffer++;
-		
-		addr++;
-		read = spi_flash_read_addr(addr);
-	}
-	
-	*buffer = '\0';
-}
-
-/*
- * Look for the next newline character, then read the word after it to buffer.
- */
-void spi_flash_read_next_word(long addr, char* buffer)
-{
-	char read;
-	
-	read = spi_flash_read_addr(addr);
-	while(read != '\n')
-	{
-		addr++;
-		read = spi_flash_read_addr(addr);
-	}
-	
-	spi_flash_read_word(addr + 1, buffer);
-}
-
-void spi_flash_shiftout(char x)
-{
-  while(SPISR_SPTEF != 1);//read the SPTEF bit, continue if bit is 1
-  SPIDR = x;                 //write data to SPI data register
-//  delay(5);
-}
-
-char spi_flash_shiftin() 
-{
-  while(SPISR_SPIF != 1);//wait for data to shift in
-  return SPIDR;
-}
 
 void delay(unsigned int x) {
   int i;

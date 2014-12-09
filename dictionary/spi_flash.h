@@ -16,7 +16,26 @@
 extern "C" {
 #endif
 
+// Instruction Characters
+#define spi_flash_read 0x03
+    
+#define CS_PIN PTT_PTT3
+#define dict_length 653339
 
+union Address{
+  long addr;
+  char bytes[4];
+};
+
+
+
+
+void spi_flash_shiftout(char x);
+char spi_flash_shiftin(void);
+void delay(unsigned int x);
+char spi_flash_read_addr(long addr);
+void spi_flash_read_word(long addr, char* buffer);
+void spi_flash_read_current_word(long addr, char* buffer);
 
 
 #ifdef	__cplusplus
