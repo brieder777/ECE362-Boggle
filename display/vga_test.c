@@ -12,7 +12,7 @@
 /* All functions after main should be initialized here */
 
 /* Variable declarations */
-char video_buffer[80*60 / 8];
+char video_buffer[80*60 / 8] = {0b01010101,0b01010101};
 
 /* Special ASCII characters */
 #ifndef CR
@@ -63,7 +63,7 @@ void initializations(void)
 	TIOS_IOS7 = 1;	// Set Ch 7 to output compare mode
 	TSCR2_PR = 0;	// No prescale
 	TSCR2_TCRE = 1;	// Reset after OC7
-	TC7 = 800;		// Scale clock to 25 MHz / 800 = 31.25 KHz
+	TC7 = 799;		// Scale clock to 25 MHz / 800 = 31.25 KHz
 	TIE_C7I = 1;	// Enable interrupts
 
 	/* Initialize interrupts */
@@ -80,6 +80,7 @@ void initializations(void)
 	// Set PM0, PM1, and PT7 as outputs.
 	DDRM = 0x03;
 	DDRT = 0x80;
+	DDRAD = 0xFF;
 
 }
 
@@ -129,9 +130,9 @@ extern void video_draw(void);
 interrupt 15 void TIM_ISR(void)
 {
 	video_draw();
-
+	
 	// clear TIM CH 7 interrupt flag 
-	TFLG1 = TFLG1 | 0x80;
+//	TFLG1 = TFLG1 | 0x80;
 }
 
 /*

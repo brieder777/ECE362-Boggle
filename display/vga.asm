@@ -191,9 +191,7 @@ video_draw:
              jsr nop10
              nop
 
-;            movb #$80,MCFLG ; clear interrupt flag  (4 cycles)
-            nop2
-            nop2
+            bset TFLG1,#$80 ; clear interrupt flag  (4 cycles)
             bset PTM,%00000001          ; raise HS  (4 cycles)
             rts ; return from subroutine
 
@@ -308,9 +306,9 @@ video_draw:
             nop
 
             movb #41, vid_blanks ; 40 blank lines         (4 cycles)           
-;            movb #$80,MCFLG      ; clear interrupt flag   (4 cycles)
-            nop2
-            nop2
+            bset TFLG1, #$80      ; clear interrupt flag   (4 cycles)
+;            nop2
+;            nop2
             cli                  ; re-enable interrupts   (1 cycle)
             bset PTM,%00000001   ; raise HS               (4 cycles)
 
