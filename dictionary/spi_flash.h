@@ -37,6 +37,8 @@ char spi_flash_read_addr(long addr);
 void spi_flash_read_word(long addr, char* buffer);
 void spi_flash_read_current_word(long addr, char* buffer);
 
+void spi_flash_word_exists(char* word);
+
 
 #ifdef	__cplusplus
 }

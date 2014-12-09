@@ -129,34 +129,38 @@ Main
 ***********************************************************************
 */
 void main(void) {
-	long i;
-	char string[100];
+//	long i;
+//	char string[100];
 
 
 	DisableInterrupts
 	initializations();
-	spi_flash_init();
+//	spi_flash_init();
 	EnableInterrupts;
 	//	delay(100);
 	//	for(i=0;i<40;i++) {	  
 	//    outchar(spi_flash_read_addr(i));
 	//	}
+	
 
-//	spi_flash_read_next_word(0, string);
+//
+//	spi_flash_read_current_word(0xDC2B6, string);
 //
 //	outstr(string);
-	
-	for(i = 0; i < dict_length; i++)
-	{
-		outchar(spi_flash_read_addr(i));
-	}
-	
-	outstr("Done");
+//	
+//	for(i = 0; i < dict_length; i++)
+//	{
+//		outchar(spi_flash_read_addr(i));
+//	}
+//	
+//	outstr("Done");
 	
   for(;;) {
   
 /* < start of your main loop > */ 
-      
+    outchar('a');
+	outchar('b');
+	outchar('\n');
 
   
   } /* loop forever */
