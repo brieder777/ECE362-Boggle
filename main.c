@@ -98,6 +98,7 @@ enum {
 
 int tim_cnt = 0;	// Hundredth-second counter
 char second = 0;	// One-second flag
+char flasher = 0;   // flash for pwm
 
 /* Special ASCII characters */
 #ifndef CR
@@ -147,6 +148,18 @@ void initializations(void)
 	TC7 = 1875;		// Scale clock to 187.5 KHz / 1875 = 100 Hz
 	TIE_C7I = 1;	// Enable interrupts
 
+	// Initialize pwm
+	DDRT_DDRT2 = 1;
+	MODRR = 0x04;
+	PWME = 0x04;
+	PWMPOL = 0x04;
+	PWMCTL = 0x00;
+	PWMCAE = 0x00;
+	PWMPER2 = 0xFF;
+	PWMDTY2 = 0x00;
+	PWMCLK = 0x00;
+	PWMPRCLK = 0x01;
+
 	/* Initialize interrupts */
 
 
@@ -170,6 +183,7 @@ void main(void)
 		// Clear all displays.
 		lcd_send_i(LCDCLR, BIG_LCD);
 		lcd_send_i(LCDCLR, SMALL_LCD);
+		PWMDTY2 = 0;
 		
 		// Entry point to to parts of program.
 		switch(screen)
@@ -326,7 +340,11 @@ void game_entry()
 			
 			lcd_chgline(LINE2 + 16, BIG_LCD);
 			lcd_message(time_string, BIG_LCD);
-			
+			PWMDTY2 = 255 - tim_rem*255/120;
+
+		}
+		if(tim_rem<=10){
+			PWMDTY2 = flasher*255;
 		}
 		
 		// Look for keyboard input.
@@ -422,6 +440,10 @@ interrupt 15 void TIM_ISR(void)
 	TFLG1 = TFLG1 | 0x80;
 
 	tim_cnt = (tim_cnt + 1) % 100;
+	if(tim_cnt % 25 == 0)
+	{
+		flasher = !flasher;
+	}
 	
 	if(tim_cnt == 0)
 		second = 1;
