@@ -37,6 +37,9 @@ extern "C" {
 #define LINE2 0xC0     //;LCD line 2 cursor position
 #define LINE3 0x94
 #define LINE4 0xD4
+
+#define BIG_LCD 1
+#define SMALL_LCD 2
     
 /**
  * Pulses LCD clock line low->high->low for appropriate LCD
