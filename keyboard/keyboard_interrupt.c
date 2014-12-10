@@ -125,6 +125,8 @@ void  initializations(void) {
 Main
 ***********************************************************************
 */
+
+extern ScanCode keyboard_last_code;
 void main(void) {
 
   	DisableInterrupts
@@ -135,13 +137,8 @@ void main(void) {
  for(;;) {
   
 /* < start of your main loop > */ 
-    if(keyboard_char_buff)
-    {
-      outchar(translate_keyboard_character(keyboard_char_buff));
-
-      keyboard_char_buff = 0;
-    }
-    
+    outchar(keyboard_getchar());
+  
   
    } /* loop forever */
    
@@ -198,25 +195,3 @@ interrupt 20 void SCI_ISR(void)
  Example:      char ch1 = inchar();
 ***********************************************************************
 */
-
-char inchar(void) {
-  /* receives character from the terminal channel */
-        while (!(SCISR1 & 0x20)); /* wait for input */
-    return SCIDRL;
-}
-
-/*
-***********************************************************************
- Name:         outchar    (use only for DEBUGGING purposes)
- Description:  outputs ASCII character x to SCI serial port
- Example:      outchar('x');
-***********************************************************************
-*/
-
-
-
-void outchar(char x) {
-  /* sends a character to the terminal channel */
-    while (!(SCISR1 & 0x80));  /* wait for output buffer empty */
-    SCIDRL = x;
-}

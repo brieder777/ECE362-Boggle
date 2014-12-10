@@ -252,8 +252,6 @@ void random_entry()
 {	
 	generate_grid((TCNT == 0) ? 1 : TCNT);
 	
-	outnum(TCNT, 5); // (Debug the random number)
-	
 	screen = GAME;
 }
 
@@ -334,7 +332,8 @@ void game_entry()
 		// Look for keyboard input.
 		
 			
-		keypress = keyboard_getcode();
+		keypress = keyboard_getcode_x();
+		//keypress_x = keyboard_getcode_x();
 		if(keypress != 0)
 		{
 			
