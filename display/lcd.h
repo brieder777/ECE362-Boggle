@@ -32,7 +32,8 @@ extern "C" {
 #define LCDCLR 0x01	// LCD clear display command
 #define TWOLINE 0x38	// LCD 2-line enable command
 #define CURMOV 0xFE	// LCD cursor move instruction
-
+#define BACK 0x10       // LCD cursor move one to left
+    
 #define LINE1 0x80     //;LCD line 1 cursor position
 #define LINE2 0xC0     //;LCD line 2 cursor position
 #define LINE3 0x94
@@ -109,6 +110,8 @@ void delay(unsigned int x);
  * Initialize the LCD.
  */
 void lcdinit(void);
+
+void lcd_backspace(void);
 
 
 #ifdef	__cplusplus

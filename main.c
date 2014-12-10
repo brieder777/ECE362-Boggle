@@ -68,6 +68,12 @@
 #include "game_logic/boggle.h"
 #include "keyboard/keyboard.h"
 #include "course_includes/our_termio.h"
+#include "display/lcd.h"
+
+
+#pragma MESSAGE DISABLE C2705 // Possible loss of data
+#pragma MESSAGE DISABLE C5909 // Assignment in condition
+#pragma MESSAGE DISABLE C4000 // Condition always TRUE
 
 /* All functions after main should be initialized here */
 void main_menu_entry(void);
@@ -155,13 +161,15 @@ void main(void)
 {
 	DisableInterrupts
 	initializations();
+	lcdinit();
 	keyboard_init();
 	EnableInterrupts;
-
+	
 	for(;;)
 	{
-		// Clear the main display.
-		outstr("\033[H\033[2J");
+		// Clear all displays.
+		lcd_send_i(LCDCLR, BIG_LCD);
+		lcd_send_i(LCDCLR, SMALL_LCD);
 		
 		// Entry point to to parts of program.
 		switch(screen)
@@ -189,6 +197,10 @@ void main(void)
 			case GAME_OVER:
 				game_over_entry();
 				break;
+			
+			default:
+				main_menu_entry();
+				break;
 		}
 	} /* loop forever */
 
@@ -198,22 +210,30 @@ void main_menu_entry()
 {
 	ScanCode code;
 	
-	outstr("   ECE 362 Boggle   \r\n");
-	outstr("\r\n");
-	outstr("1. Start Random Game\r\n");
-	outstr("2. Enter Seed");
+	lcd_chgline(LINE1,BIG_LCD);
+
+	lcd_message("   ECE 362 Boggle   ", BIG_LCD);
+	
+	lcd_chgline(LINE3, BIG_LCD);
+	lcd_message("1. Start Random Game", BIG_LCD);
+	
+	lcd_chgline(LINE4, BIG_LCD);
+	lcd_message("2. Enter Seed", BIG_LCD);
 	
 	while(1)
 	{
 		while((code = keyboard_getcode()) == 0);
+		
 
 		if(code == ONE)
 		{
+			lcd_print_c('1',SMALL_LCD);
 			screen = RANDOM;
 			break;
 		}
 		else if(code == TWO)
 		{
+			lcd_print_c('2',SMALL_LCD);
 			screen = SEED;
 			break;
 		}
@@ -229,10 +249,7 @@ void high_scores_entry()
 }
 
 void random_entry()
-{
-	outstr("Generating Game\r\n");
-	outstr("Please Wait...\r\n");
-	
+{	
 	generate_grid((TCNT == 0) ? 1 : TCNT);
 	
 	outnum(TCNT, 5); // (Debug the random number)
@@ -245,29 +262,28 @@ void seed_entry()
     int seed = 0;
     char keypress;
 	
-    outstr("Enter a seed:\r\n");
+	lcd_chgline(LINE1,BIG_LCD);
+    lcd_message("Enter a seed: ",BIG_LCD);
+	lcd_chgline(LINE2,BIG_LCD);
     while ((keypress = keyboard_getchar()) == 0);
     while (keypress != '\n') {
         seed *= 10;
         seed += keypress - '0';
-		outchar(keypress);
+		lcd_print_c(keypress,BIG_LCD);
         while((keypress = keyboard_getchar()) == 0);
     }
-    outstr("Generating Game\r\n");
-    outstr("Please Wait...\r\n");
     
 	if(seed == 0)
 		seed = 1;
 	
 	generate_grid(seed);
     
-    outnum(seed, 5);
-    
     screen = GAME;
 }
 
 void game_entry()
 {
+	char time_string[4];
 	// Display grid
 	int i;
 	int j;
@@ -278,30 +294,41 @@ void game_entry()
 	
 	char buffer[BOGGLE_WORDLEN+1];
 
-
+	lcd_chgline(LINE1,BIG_LCD);
 	// Display grid.
 	for(i = 0; i < BOGGLE_SIZE; i++)
 	{
-		outstr("\r\n");
-
 		for(j = 0; j < BOGGLE_SIZE; j++)
 		{
-			outchar(boggle_grid[i][j]);
-			outchar(' ');
+			lcd_print_c(boggle_grid[i][j],BIG_LCD);
+			lcd_print_c(' ',BIG_LCD);
+		}
+		switch(i){
+			case 0:
+				lcd_chgline(LINE2,BIG_LCD);
+				break;
+			case 1:
+				lcd_chgline(LINE3,BIG_LCD);
+				break;
+			case 2:
+				lcd_chgline(LINE4,BIG_LCD);
+				break;
 		}
 	}
 
-	
-	outstr("\n\rTime Remaining:\n\r");
+	lcd_chgline(LINE2 + 10,BIG_LCD);
+	lcd_message("Time: ",BIG_LCD);
 	while(tim_rem != 0)
 	{
 		// Output time remaining.
 		if(second == 1) {
 			second = 0;
 			tim_rem -= 1;
-//			outnum(tim_rem, 3);
-//			outstr("\b\b\b");
-//			outstr("\r\n");
+			sprintf(time_string, "%3d", tim_rem);
+			
+			lcd_chgline(LINE2 + 16, BIG_LCD);
+			lcd_message(time_string, BIG_LCD);
+			
 		}
 		
 		// Look for keyboard input.
@@ -316,7 +343,7 @@ void game_entry()
 			{
 				if(entered_wordlen > 0)
 				{
-					outstr("\b \b");
+					lcd_backspace();
 					entered_wordlen--;
 				}
 			}
@@ -327,18 +354,18 @@ void game_entry()
 					buffer[entered_wordlen]= '\0';
 					while(entered_wordlen > 0)
 					{
-						outstr("\b \b");
+						lcd_backspace();
 						entered_wordlen--;	
 					}
 					//perform validation of word in buffer
 					// @todo make this a function
 					if(validate_word_grid(buffer))
 					{
-						outstr("Maybe Yaaaaay!!!!");
+						lcd_message("Maybe Yaaaaay!!!!",SMALL_LCD);
 					}
 					else
 					{
-						outstr("Not yay");
+						lcd_message("Not yay",SMALL_LCD);
 					}
 				}
 			}
@@ -350,7 +377,7 @@ void game_entry()
 			else if(entered_wordlen < BOGGLE_WORDLEN)
 			{
 				buffer[entered_wordlen] = translate_keyboard_character(keypress);
-				outchar(buffer[entered_wordlen]);
+				lcd_print_c(buffer[entered_wordlen],SMALL_LCD);
 				entered_wordlen++;
 			}
 		}	

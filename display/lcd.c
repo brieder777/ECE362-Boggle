@@ -46,6 +46,7 @@ void lcd_send_i(char x, char lcd)
 {
   RS = 0;   // set the register select line low (instruction data)
   lcd_send_byte(x,lcd);   // send byte
+  delay(16000);
 }
 
 void lcd_chgline(char pos, char lcd)
@@ -68,6 +69,13 @@ void lcd_message(char x[], char lcd)
   }  
 }
 
+void lcd_backspace()
+{
+	lcd_send_i(BACK,SMALL_LCD);
+	lcd_print_c(' ',SMALL_LCD);
+	lcd_send_i(BACK,SMALL_LCD);
+}
+
 void lcdinit() {
   DDRT_DDRT4 = 1;//pt4 as output(/cs)  
   DDRT_DDRT5 = 1;//pt5 as output(clk1)   
@@ -83,7 +91,8 @@ void lcdinit() {
   lcd_send_i(LCDON,2);            //turn on LCD (LCDON instruction) ($0F)
   lcd_send_i(TWOLINE,1);          //enable two-line mode (TWOLINE instruction) ($38)
   lcd_send_i(TWOLINE,2);          //enable two-line mode (TWOLINE instruction) ($38)
-  lcd_send_i(LCDCLR,1);           //clear LCD (LCDCLR instruction) ($01) 
+  lcd_send_i(LCDCLR,1);           //clear LCD (LCDCLR instruction) ($01)
+  delay(8000);
   lcd_send_i(LCDCLR,2);           //clear LCD (LCDCLR instruction) ($01)
   delay(8000);                    //wait for 2ms so that the LCD can wake up  
 }
