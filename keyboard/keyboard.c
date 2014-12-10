@@ -60,7 +60,6 @@ void keyboard_init(void)
   // Initialize the Port M 0 and 1 as input and output respectively
   DDRM_DDRM0 = 0; // Data received from keyboard
   DDRM_DDRM1 = 1; // CLR signal sent to flip-flop
-  DDRT = 1;
 
   // Initialize interrupts
   INTCR_IRQE = 0;
