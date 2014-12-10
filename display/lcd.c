@@ -19,9 +19,9 @@ void lcd_clock(char lcd)
     LCDCLK2 = 1;
     LCDCLK2 = 0;
   } else if(lcd == 3){
-    LCDCLK2 = 0;
-    LCDCLK2 = 1;
-    LCDCLK2 = 0;
+    LCDCLK3 = 0;
+    LCDCLK3 = 1;
+    LCDCLK3 = 0;
   }
 }
 
