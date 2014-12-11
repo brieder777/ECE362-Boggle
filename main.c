@@ -100,6 +100,8 @@ int tim_cnt = 0;	// Hundredth-second counter
 char second = 0;	// One-second flag
 char flasher = 0;   // flash for pwm
 
+Player players[2];
+
 /* Special ASCII characters */
 #ifndef CR
 	#define CR 0x0D		// ASCII return
@@ -293,10 +295,18 @@ void seed_entry()
     screen = GAME;
 }
 
+/**
+ * Validate a word using both the game logic and dictionary libraries.
+ */
+char validate_word(char* word, Player* player)
+{
+	return validate_word_grid(word)
+			&& validate_word_prev(word, player);
+}
+
 void game_entry()
 {
 	char time_string[4];
-	// Display grid
 	int i;
 	int j;
 	int tim_rem = 120;
@@ -305,9 +315,10 @@ void game_entry()
 	char entered_wordlen = 0;
 	
 	char buffer[BOGGLE_WORDLEN+1];
+	char keypresses[2];
 
-	lcd_chgline(LINE1,BIG_LCD);
 	// Display grid.
+	lcd_chgline(LINE1,BIG_LCD);
 	for(i = 0; i < BOGGLE_SIZE; i++)
 	{
 		for(j = 0; j < BOGGLE_SIZE; j++)
@@ -330,9 +341,11 @@ void game_entry()
 
 	lcd_chgline(LINE2 + 10,BIG_LCD);
 	lcd_message("Time: ",BIG_LCD);
+	
+	// Game has started; countdown and read inputs:
 	while(tim_rem != 0)
 	{
-		// Output time remaining.
+		// Output time remaining if it has changed.
 		if(second == 1) {
 			second = 0;
 			tim_rem -= 1;
@@ -349,56 +362,59 @@ void game_entry()
 		
 		// Look for keyboard input.
 		
-			
-		keypress = keyboard_getcode_x();
-		//keypress_x = keyboard_getcode_x();
-		//@TODO: Add second player functionality
-		if(keypress != 0)
+		keypresses[0] = keyboard_getcode();
+		keypresses[1] = keyboard_getcode_x();
+		
+		for(i = 0; i < 2; i++)
 		{
-			
-			
-			if(keypress == BACKSPACE)
+			char keypress = keypresses[i];
+
+			if(keypress != 0)
 			{
-				if(entered_wordlen > 0)
+				if(keypress == BACKSPACE)
 				{
-					lcd_backspace();
-					entered_wordlen--;
-				}
-			}
-			else if(keypress == ENTER)
-			{
-				if(entered_wordlen > 2)
-				{
-					buffer[entered_wordlen]= '\0';
-					while(entered_wordlen > 0)
+					if(entered_wordlen > 0)
 					{
 						lcd_backspace();
-						entered_wordlen--;	
-					}
-					//perform validation of word in buffer
-					// @todo make this a function
-					if(validate_word_grid(buffer))
-					{
-						lcd_message("Maybe Yaaaaay!!!!",SMALL_LCD_1);
-					}
-					else
-					{
-						lcd_message("Not yay",SMALL_LCD_1);
+						entered_wordlen--;
 					}
 				}
-			}
-			else if(keypress == ESCAPE)
-			{
-				screen = MAIN_MENU;
-				return;
-			}
-			else if(entered_wordlen < BOGGLE_WORDLEN)
-			{
-				buffer[entered_wordlen] = translate_keyboard_character(keypress);
-				lcd_print_c(buffer[entered_wordlen],SMALL_LCD_1);
-				entered_wordlen++;
-			}
-		}	
+				else if(keypress == ENTER)
+				{
+					if(entered_wordlen > 2)
+					{
+						buffer[entered_wordlen]= '\0';
+						while(entered_wordlen > 0)
+						{
+							lcd_backspace();
+							entered_wordlen--;	
+						}
+						//perform validation of word in buffer
+						// @todo make this a function
+						if(validate_word(buffer, &(players[i])))
+						{
+							lcd_message("Correct", i + 2);
+						}
+						else
+						{
+							lcd_message("Incorrect", i + 2);
+						}
+					}
+				}
+				else if(keypress == ESCAPE)
+				{
+					screen = MAIN_MENU;
+					return;
+				}
+				else if(entered_wordlen < BOGGLE_WORDLEN)
+				{
+					buffer[entered_wordlen] = translate_keyboard_character(keypress);
+					lcd_print_c(buffer[entered_wordlen], i + 2);
+					entered_wordlen++;
+				}
+			}	
+		}
+
 	}
 	screen = GAME_OVER;
 }
@@ -406,10 +422,24 @@ void game_entry()
 void game_over_entry()
 {
 	ScanCode keypress;
+	char points_string[5];
 	
-	outstr("\n\rGame Over!\n\r");
-	outstr("Press ENTER to\n\r");
-	outstr("play again!\n\r");
+	lcd_chgline(LINE2, BIG_LCD);
+	lcd_message("Game Over!", BIG_LCD);
+	
+	lcd_chgline(LINE3, BIG_LCD);
+	lcd_message("Press ENTER to", BIG_LCD);
+	
+	lcd_chgline(LINE4, BIG_LCD);
+	lcd_message("play again!", BIG_LCD);
+	
+	// Ouptut scores.
+	lcd_chgline(LINE1, SMALL_LCD_1);
+	lcd_message("Score:", SMALL_LCD_1);
+	
+	lcd_chgline(LINE2, SMALL_LCD_1);
+	sprintf(points_string, "%d", players[0].score);
+	lcd_message(points_string, SMALL_LCD_1);
 	
 	while ((keypress = keyboard_getcode()) != ENTER);
 	

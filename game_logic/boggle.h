@@ -32,6 +32,7 @@ extern "C" {
 typedef struct boggle_player {
     char word_count; // Number of words found.
     char prev_words[BOGGLE_MAXWORDS][BOGGLE_WORDLEN + 1]; // Array of previously found words.
+    unsigned char score; // Score. (Sum of points of correct words.)
 } Player;
 
 typedef char Grid[BOGGLE_SIZE][BOGGLE_SIZE];
@@ -107,7 +108,8 @@ char calculate_points(char* word);
 void Player_init(Player* player);
 
 /**
- * Add a word to a player's list of previous words.
+ * Add a word to a player's list of previous words, and add the points for the
+ * word.
  * 
  * @param player    The player whose list to add the word to.
  * @param word      A string containing the word to add. (Terminated with a

@@ -256,4 +256,6 @@ void Player_add_word(Player* player, char* word)
 	strcpy(player->prev_words[player->word_count], word);
 	
 	(player->word_count)++;
+	
+	player->word_count += calculate_points(word);
 }
