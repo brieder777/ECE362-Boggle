@@ -90,13 +90,13 @@ MyCode:     SECTION
    video_1:  macro
               inx           ; increment X    (1 cycle)
               nop2          ; waste time     (2 cycles)
-              movb X, PTT   ; write to pins  (5 cycles)         
+              movb X, PTT ; write to pins  (5 cycles)         
               endm
    
    video_shift: macro
               nop2          ; waste time (4 cycles)
               nop2
-              lsl PTT       ; shift PTT left (4 cycles)
+              lsl PTT       ; shift PTT left
               endm
 
    video_7:  macro
@@ -192,7 +192,9 @@ video_draw:
              jsr nop10
              nop
 
-            bset TFLG1,#$80 ; clear interrupt flag  (4 cycles)
+;            movb #$80,MCFLG ; clear interrupt flag  (4 cycles)
+            nop2
+            nop2
             bset PTM,%00000001          ; raise HS  (4 cycles)
             rts ; return from subroutine
 
@@ -260,9 +262,7 @@ video_draw:
             video_8;
             video_7;
 
-
             inx       ; increment for next  (1 cycle)
-;            nop
             nop2      ; burn time           (2 cycle)
             nop2      ; burn time           (2 cycle)
             clr PTT ; blacken video       (3 cycles)
@@ -319,10 +319,10 @@ video_draw:
             nop2
             nop
 
-            movb #41, vid_blanks ; 40 blank lines         (4 cycles)           
-            bset TFLG1, #$80      ; clear interrupt flag   (4 cycles)
-;            nop2
-;            nop2
+            movb #40, vid_blanks ; 40 blank lines         (4 cycles)           
+;            movb #$80,MCFLG      ; clear interrupt flag   (4 cycles)
+            nop2
+            nop2
             cli                  ; re-enable interrupts   (1 cycle)
             bset PTM,%00000001   ; raise HS               (4 cycles)
 
