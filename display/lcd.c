@@ -71,9 +71,9 @@ void lcd_message(char x[], char lcd)
 
 void lcd_backspace()
 {
-	lcd_send_i(BACK,SMALL_LCD);
-	lcd_print_c(' ',SMALL_LCD);
-	lcd_send_i(BACK,SMALL_LCD);
+	lcd_send_i(BACK,SMALL_LCD_1);
+	lcd_print_c(' ',SMALL_LCD_1);
+	lcd_send_i(BACK,SMALL_LCD_1);
 }
 
 void lcdinit() {
@@ -89,10 +89,14 @@ void lcdinit() {
   LCDCLK3 = 1; 
   lcd_send_i(LCDON,1);            //turn on LCD (LCDON instruction) ($0F)
   lcd_send_i(LCDON,2);            //turn on LCD (LCDON instruction) ($0F)
+  lcd_send_i(LCDON,3);            //turn on LCD (LCDON instruction) ($0F)
   lcd_send_i(TWOLINE,1);          //enable two-line mode (TWOLINE instruction) ($38)
   lcd_send_i(TWOLINE,2);          //enable two-line mode (TWOLINE instruction) ($38)
+  lcd_send_i(TWOLINE,3);          //enable two-line mode (TWOLINE instruction) ($38)
   lcd_send_i(LCDCLR,1);           //clear LCD (LCDCLR instruction) ($01)
   delay(8000);
   lcd_send_i(LCDCLR,2);           //clear LCD (LCDCLR instruction) ($01)
   delay(8000);                    //wait for 2ms so that the LCD can wake up  
+  lcd_send_i(LCDCLR,3);           //clear LCD (LCDCLR instruction) ($01)
+  delay(8000);                    //wait for 2ms so that the LCD can wake up 
 }

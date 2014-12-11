@@ -85,6 +85,8 @@ void main(void) {
 	lcd_message(big,1);
   lcd_chgline(LINE2,2);
 	lcd_message(small,2);
+  lcd_chgline(LINE2,3);
+  lcd_message("test",3);
 	//lcd_print_c('h',1);
 	
   for(;;) {
