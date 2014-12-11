@@ -136,25 +136,25 @@ long get_addr(char letter)
 	};
 	return addresses[letter-'a'];
 }
-//
-//char spi_flash_word_exists(char* word)
-//{
-//	long start = get_addr(word[0]);
-//	long end = get_addr(word[0]+1);
-//	char * buffer;
-//	long addr = start;
-//	char i;
-//	while(addr < end)
-//	{
-//		spi_flash_read_current_word(addr,buffer);
-//		if(strcmp(word,buffer)==0)
-//		{
-//			return 1;
-//		}
-//		//move addr to after next newline
-//		while(spi_flash_read_addr(addr) != '\n')
-//			addr++;//moves to next newline
-//		addr++;//moves after next newline
-//	}
-//	return 0;
-//}
+
+char spi_flash_word_exists(char* word)
+{
+	long start = get_addr(word[0]);
+	long end = get_addr(word[0]+1);
+	char buffer[10];
+	long addr = start;
+	char i;
+	while(addr < end)
+	{
+		spi_flash_read_current_word(addr,buffer);
+		if(strcmp(word,buffer)==0)
+		{
+			return 1;
+		}
+		//move addr to after next newline
+		while(spi_flash_read_addr(addr) != '\n')
+			addr++;//moves to next newline
+		addr++;//moves after next newline
+	}
+	return 0;
+}

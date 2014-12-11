@@ -29,7 +29,7 @@ union Address{
 
 
 
-
+void spi_flash_init(void);
 void spi_flash_shiftout(char x);
 char spi_flash_shiftin(void);
 void delay(unsigned int x);
