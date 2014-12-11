@@ -182,7 +182,7 @@ void main(void)
 	{
 		// Clear all displays.
 		lcd_send_i(LCDCLR, BIG_LCD);
-		lcd_send_i(LCDCLR, SMALL_LCD);
+		lcd_send_i(LCDCLR, SMALL_LCD_1);
 		PWMDTY2 = 0;
 		
 		// Entry point to to parts of program.
@@ -241,13 +241,13 @@ void main_menu_entry()
 
 		if(code == ONE)
 		{
-			lcd_print_c('1',SMALL_LCD);
+			lcd_print_c('1',SMALL_LCD_1);
 			screen = RANDOM;
 			break;
 		}
 		else if(code == TWO)
 		{
-			lcd_print_c('2',SMALL_LCD);
+			lcd_print_c('2',SMALL_LCD_1);
 			screen = SEED;
 			break;
 		}
@@ -352,6 +352,7 @@ void game_entry()
 			
 		keypress = keyboard_getcode_x();
 		//keypress_x = keyboard_getcode_x();
+		//@TODO: Add second player functionality
 		if(keypress != 0)
 		{
 			
@@ -378,11 +379,11 @@ void game_entry()
 					// @todo make this a function
 					if(validate_word_grid(buffer))
 					{
-						lcd_message("Maybe Yaaaaay!!!!",SMALL_LCD);
+						lcd_message("Maybe Yaaaaay!!!!",SMALL_LCD_1);
 					}
 					else
 					{
-						lcd_message("Not yay",SMALL_LCD);
+						lcd_message("Not yay",SMALL_LCD_1);
 					}
 				}
 			}
@@ -394,7 +395,7 @@ void game_entry()
 			else if(entered_wordlen < BOGGLE_WORDLEN)
 			{
 				buffer[entered_wordlen] = translate_keyboard_character(keypress);
-				lcd_print_c(buffer[entered_wordlen],SMALL_LCD);
+				lcd_print_c(buffer[entered_wordlen],SMALL_LCD_1);
 				entered_wordlen++;
 			}
 		}	
