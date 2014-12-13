@@ -9,13 +9,11 @@
 
  Team Members:
 
-   - Team/Doc Leader: < ? >      Signature: ______________________
+   - Team/Doc Leader: Brian Rieder			Signature: Brian Rieder
    
-   - Software Leader: < ? >      Signature: ______________________
+   - Software Leader: Subhav Ramachandran	Signature: Subhav Ramachandran
 
-   - Interface Leader: < ? >     Signature: ______________________
-
-   - Peripheral Leader: < ? >    Signature: ______________________
+   - Peripheral Leader: Luke Neumann		Signature: Luke Neumann
 
 
  Academic Honesty Statement:  In signing above, we hereby certify that we 
@@ -26,7 +24,12 @@
 
  ***********************************************************************
 
- The objective of this Mini-Project is to .... < ? >
+ The objective of this Mini-Project is to implement the word game Boggle by
+ utilizing the MC9S12C32 microcontroller. Users are able to interface with the
+ microcontroller to play the game through the use of a wonderfully “retro”
+ PS/2 keyboard. Words entered are validated against the randomly generated
+ character grid and a dictionary stored in external flash memory.
+
 
 
  ***********************************************************************
@@ -34,15 +37,19 @@
  List of project-specific success criteria (functionality that will be
  demonstrated):
 
- 1.
+ 1. Interface with PS/2 Keyboards as the primary input mechanism.
 
- 2.
+ 2. Interface with external memory to look up valid words in the English
+ 	language.
 
- 3.
+ 3. Accurately keep track of time to implement a countdown timer for the game.
 
- 4.
+ 4. Implement the game logic true to the game _Boggle_. This includes properly
+ 	validating words, keeping track of score, and randomly generating a letter
+ 	grid.
 
- 5.
+ 5. Interface with either LCD character displays or external displays to
+ 	output game information.
 
  ***********************************************************************
 
@@ -50,11 +57,11 @@
 
   Update history (add an entry every time a significant change is made):
 
-  Date: < ? >  Name: < ? >   Update: < ? >
+		  This information can be found in our Git repository log.
 
-  Date: < ? >  Name: < ? >   Update: < ? >
-
-  Date: < ? >  Name: < ? >   Update: < ? >
+		  File header comments in driver files are NOT an accurate description
+		  of team member contribution to that part of the project. They are
+		  automatically generated and simply state who CREATED the file.
 
 
  ***********************************************************************
