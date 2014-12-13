@@ -101,6 +101,7 @@ void generate_grid(unsigned int seed)
 // Variable to hold 
 static Grid visited = {{0,0,0,0}, {0,0,0,0}, {0,0,0,0}, {0,0,0,0}};
 
+#pragma MESSAGE DISABLE C1855 /* WARNING C1855: Recursive function call */
 /**
  * Helper function to `validate_word_grid`. Finds out whether a word can be
  * produced from a given starting location (i, j). 
@@ -255,4 +256,6 @@ void Player_add_word(Player* player, char* word)
 	strcpy(player->prev_words[player->word_count], word);
 	
 	(player->word_count)++;
+	
+	player->word_count += calculate_points(word);
 }

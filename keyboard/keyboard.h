@@ -95,6 +95,14 @@ void keyboard_init(void);
  * @return          The last ScanCode if valid, INVALID (0) otherwise.
  */
 ScanCode keyboard_getcode(void);
+/**
+ * Get the last ScanCode sent from the keyboard.
+ * 
+ * The last ScanCode is cleared when this function is accessed.
+ * 
+ * @return          The last ScanCode if valid, INVALID (0) otherwise.
+ */
+ScanCode keyboard_getcode_x(void);
 
 /**
  * Get the last character received from the keyboard.

@@ -100,7 +100,10 @@ int tim_cnt = 0;	// Hundredth-second counter
 char second = 0;	// One-second flag
 char flasher = 0;   // flash for pwm
 
-Player players[2];
+char scorebuff = 0;
+
+Player p1;
+Player p2;
 
 /* Special ASCII characters */
 #ifndef CR
@@ -298,6 +301,7 @@ void seed_entry()
 /**
  * Validate a word using both the game logic and dictionary libraries.
  */
+
 char validate_word(char* word, Player* player)
 {
 	return validate_word_grid(word)
@@ -309,13 +313,17 @@ void game_entry()
 	char time_string[4];
 	int i;
 	int j;
+	char len_cnt;
+	char tmp;
+	char tmp2;
+	char scoreout[4];
 	int tim_rem = 120;
 //	int tim_rem = 10;
-	ScanCode keypress=0;
+	ScanCode keypress = 0;
 	char entered_wordlen = 0;
 	
 	char buffer[BOGGLE_WORDLEN+1];
-	char keypresses[2];
+	//char keypresses[2];
 
 	// Display grid.
 	lcd_chgline(LINE1,BIG_LCD);
@@ -341,6 +349,11 @@ void game_entry()
 
 	lcd_chgline(LINE2 + 10,BIG_LCD);
 	lcd_message("Time: ",BIG_LCD);
+
+	lcd_chgline(LINE1, SMALL_LCD_2);
+	lcd_message("Score:", SMALL_LCD_2);
+	lcd_chgline(LINE2, SMALL_LCD_2);
+	lcd_message("0", SMALL_LCD_2);
 	
 	// Game has started; countdown and read inputs:
 	while(tim_rem != 0)
@@ -362,59 +375,77 @@ void game_entry()
 		
 		// Look for keyboard input.
 		
-		keypresses[0] = keyboard_getcode();
-		keypresses[1] = keyboard_getcode_x();
-		
-		for(i = 0; i < 2; i++)
+		keypress = keyboard_getcode();
+		if(keypress != 0)
 		{
-			char keypress = keypresses[i];
-
-			if(keypress != 0)
+			if(keypress == BACKSPACE)
 			{
-				if(keypress == BACKSPACE)
+				if(entered_wordlen > 0)
 				{
-					if(entered_wordlen > 0)
+					lcd_backspace(SMALL_LCD_1);
+					entered_wordlen--;
+				}
+			}
+			else if(keypress == ENTER)
+			{
+				if(entered_wordlen > 2)
+				{
+					buffer[entered_wordlen]= '\0';
+					while(entered_wordlen > 0)
 					{
-						lcd_backspace();
-						entered_wordlen--;
+						lcd_backspace(SMALL_LCD_1);
+						entered_wordlen--;	
 					}
-				}
-				else if(keypress == ENTER)
-				{
-					if(entered_wordlen > 2)
+					//perform validation of word in buffer
+					// @todo make this a function
+					lcd_chgline(LINE1, SMALL_LCD_1);
+					if(validate_word(buffer, &p1))
 					{
-						buffer[entered_wordlen]= '\0';
-						while(entered_wordlen > 0)
-						{
-							lcd_backspace();
-							entered_wordlen--;	
+						lcd_message("Correct  ", SMALL_LCD_1);
+						Player_add_word(&p1, buffer);
+						scorebuff += calculate_points(buffer);
+						len_cnt = 0;
+						tmp = scorebuff;
+						while(tmp > 0) {
+							tmp /= 10;
+							++len_cnt;
 						}
-						//perform validation of word in buffer
-						// @todo make this a function
-						if(validate_word(buffer, &(players[i])))
-						{
-							lcd_message("Correct", i + 2);
+						tmp2 = scorebuff;
+						if(scorebuff < 10){
+							scorebuff += '0';
+							scoreout[0] = scorebuff;
+							lcd_chgline(LINE2, SMALL_LCD_2);
+							lcd_message(scoreout, SMALL_LCD_2);
 						}
-						else
-						{
-							lcd_message("Incorrect", i + 2);
+						else {
+							for(tmp = len_cnt - 1; tmp >= 0; --tmp) {
+								scoreout[tmp] = (scorebuff % 10) + '0';
+								scorebuff = scorebuff / 10;
+							}
+							lcd_chgline(LINE2, SMALL_LCD_2);
+							lcd_message(scoreout, SMALL_LCD_2);
 						}
+						scorebuff = tmp2;
 					}
+					else
+					{
+						lcd_message("Incorrect", SMALL_LCD_1);
+					}
+					lcd_chgline(LINE2, SMALL_LCD_1);
 				}
-				else if(keypress == ESCAPE)
-				{
-					screen = MAIN_MENU;
-					return;
-				}
-				else if(entered_wordlen < BOGGLE_WORDLEN)
-				{
-					buffer[entered_wordlen] = translate_keyboard_character(keypress);
-					lcd_print_c(buffer[entered_wordlen], i + 2);
-					entered_wordlen++;
-				}
-			}	
+			}
+			else if(keypress == ESCAPE)
+			{
+				screen = MAIN_MENU;
+				return;
+			}
+			else if(entered_wordlen < BOGGLE_WORDLEN)
+			{
+				buffer[entered_wordlen] = translate_keyboard_character(keypress);
+				lcd_print_c(buffer[entered_wordlen], SMALL_LCD_1);
+				entered_wordlen++;
+			}
 		}
-
 	}
 	screen = GAME_OVER;
 }
@@ -438,7 +469,7 @@ void game_over_entry()
 	lcd_message("Score:", SMALL_LCD_1);
 	
 	lcd_chgline(LINE2, SMALL_LCD_1);
-	sprintf(points_string, "%d", players[0].score);
+	sprintf(points_string, "%d", p1.score);
 	lcd_message(points_string, SMALL_LCD_1);
 	
 	while ((keypress = keyboard_getcode()) != ENTER);
